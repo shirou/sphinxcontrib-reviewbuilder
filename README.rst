@@ -33,8 +33,9 @@ How to use
 
 ::
 
-  % sphinx-build 
+  % sphinx-build -b review -d build/doctrees   source build/review
 
+or you can add this command line to your Makefile.
 
 Repository
 ==========
@@ -44,4 +45,6 @@ https://bitbucket.org/r_rudi/sphinxcontrib-reviewbuilder
 License
 ========
 
-LGPL.Same as ReVIEW original. See COPYING file.
+LGPL v2.
+
+Same as ReVIEW original. See LICENSE file.
