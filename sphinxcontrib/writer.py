@@ -388,3 +388,10 @@ class ReVIEWTranslator(TextTranslator):
             self.add_text('#@# %s%s' % (c, self.nl))
 
         raise nodes.SkipNode
+
+    def visit_raw(self, node):
+        form = node.get('format', '')
+        self.new_state(0)
+        self.add_text('//raw[|%s|%s]' % (form, node.astext()))
+        self.end_state(wrap = False)
+        raise nodes.SkipNode

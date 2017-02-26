@@ -36,6 +36,7 @@ def test_basic(app, status, warnings):
         '//footnote[f1][脚注1]',
         '#@# コメントです',
         '#@# コメントブロック1\n#@# コメントブロック2',
+        '//raw[|html|<hr width=50 size=10>]',
     ]
     for e in expected:
         assert e in re

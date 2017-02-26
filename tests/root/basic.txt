@@ -93,3 +93,11 @@ section 5.2
 ..
    コメントブロック1
    コメントブロック2
+
+
+section 6
+++++++++++++++
+
+.. raw:: html
+
+   <hr width=50 size=10>
