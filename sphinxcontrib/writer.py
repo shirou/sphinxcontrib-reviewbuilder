@@ -350,3 +350,35 @@ class ReVIEWTranslator(TextTranslator):
     def depart_table(self, node):
         self.table = None
         self.add_text("//}" + self.nl)
+
+    def visit_figure(self, node):
+        self.new_state(0)
+
+    def visit_image(self, node):
+        filename = os.path.splitext(node['uri'])[0]
+
+        caption = None
+        for c in node.parent.children:
+            if isinstance(c, nodes.caption):
+                caption = c.astext()
+        legend = None
+        for c in node.parent.children:
+            if isinstance(c, nodes.legend):
+                legend = c.astext()
+
+        if caption:
+            self.add_text('//image[%s][%s]{%s' % (filename, caption, self.nl))
+        else:
+            self.add_text('//image[%s]{%s' % (filename, self.nl))
+        if legend:
+            self.add_text(legend)
+
+        self.add_text(self.nl + '}' + self.nl)
+        raise nodes.SkipNode
+
+
+    def visit_legend(self, node):
+        raise nodes.SkipNode
+
+    def depart_figure(self, node):
+        self.end_state()

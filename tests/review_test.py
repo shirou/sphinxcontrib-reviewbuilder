@@ -114,3 +114,17 @@ def test_table(app, status, warnings):
 
     for e in expected:
         assert e in re
+
+@with_app(buildername='review', srcdir='tests/root', copy_srcdir_to_tmpdir=True)
+def test_table(app, status, warnings):
+    app.build()
+
+    re = (app.outdir / 'figure.re').read_text()
+
+    expected = [
+        '//image[picture][ここはfigureのキャプションです。]{',
+        '//image[picture]{',
+    ]
+
+    for e in expected:
+        assert e in re

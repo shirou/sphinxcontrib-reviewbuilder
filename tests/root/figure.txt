@@ -1,0 +1,20 @@
+図
+====
+
+figure
+--------
+
+.. figure:: picture.png
+   :alt: figureのaltです。無視されます
+   :name: figureのlabelです
+
+   ここはfigureのキャプションです。
+
+   ここはfigureの解説です。
+
+
+
+image
+--------
+
+.. image:: picture.png
