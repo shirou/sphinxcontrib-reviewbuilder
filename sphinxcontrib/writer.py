@@ -78,6 +78,26 @@ class ReVIEWTranslator(TextTranslator):
         "hint": "info",
     }
 
+    def __init__(self, document, builder):
+        nodes.NodeVisitor.__init__(self, document)
+        self.builder = builder
+
+        newlines = builder.config.text_newlines
+        if newlines == 'windows':
+            self.nl = '\r\n'
+        elif newlines == 'native':
+            self.nl = os.linesep
+        else:
+            self.nl = '\n'
+        self.end = "%s//}%s" % (self.nl, self.nl)
+        self.states = [[]]
+        self.stateindent = [0]
+        self.list_counter = []
+        self.sectionlevel = 0
+        self.lineblocklevel = 0
+        self.table = None
+
+
     def end_state(self, wrap=True, end=[''], first=None):
         content = self.states.pop()
         maxindent = sum(self.stateindent)
@@ -129,7 +149,7 @@ class ReVIEWTranslator(TextTranslator):
             # remove an empty line before title if it is first section title in the document
             title.pop(0)
         self.states[-1].append((0, title))
-        self.add_text('\n')
+        self.add_text(self.nl)
 
     def visit_title_reference(self, node):
         """inline citation reference"""
@@ -203,7 +223,7 @@ class ReVIEWTranslator(TextTranslator):
         lang = node['language']
 
         if lang == "bash":  # use cmd
-            self.add_text('//cmd{\n')
+            self.add_text('//cmd{' + self.nl)
             return
 
 
@@ -220,17 +240,17 @@ class ReVIEWTranslator(TextTranslator):
         if 'linenos' in node and node['linenos']:
             if 'highlight_args' in node and 'linenostart' in node['highlight_args']:
                 n = node['highlight_args']['linenostart']
-                self.add_text('//firstlinenum[%s]\n' % n)
+                self.add_text('//firstlinenum[%s]%s' % (n, self.nl))
                 # TODO: remove highlight args line
             t += "num"
 
         if names:
-            self.add_text('//%s[%s][%s][%s]{\n' % (t, names, caption, lang))
+            self.add_text('//%s[%s][%s][%s]{%s' % (t, names, caption, lang, self.nl))
         else:
-            self.add_text('//%s[%s][%s]{\n' % (t, caption, lang))
+            self.add_text('//%s[%s][%s]{%s' % (t, caption, lang, self.nl))
 
     def depart_literal_block(self, node):
-        self.end_state(end=['//}\n'], wrap=False)
+        self.end_state(end=['//}' + self.nl], wrap=False)
 
     def visit_caption(self, node):
         raise nodes.SkipNode
@@ -248,15 +268,15 @@ class ReVIEWTranslator(TextTranslator):
                 caption = node.children[0].astext()
                 node.children.pop(0)
             if caption:
-                f = u'//%s[%s]{\n' % (self.admonitionlabels[name], caption)
+                f = u'//%s[%s]{%s' % (self.admonitionlabels[name], caption, self.nl)
             else:
-                f = u'//%s{\n' % (self.admonitionlabels[name])
+                f = u'//%s{%s' % (self.admonitionlabels[name], self.nl)
             self.add_text(f)
 
         return visit_admonition
 
     def _depart_named_admonition(self, node):
-        self.add_text("\n//}\n")
+        self.add_text(self.end)
 
     visit_attention = _make_visit_admonition('attention')
     depart_attention = _depart_named_admonition
@@ -278,7 +298,7 @@ class ReVIEWTranslator(TextTranslator):
     depart_warning = _depart_named_admonition
 
     def visit_block_quote(self, node):
-        self.add_text('//quote{\n%s\n//}\n' % (node.astext()))
+        self.add_text('//quote{\n%s%s' % (node.astext(), self.end))
         raise nodes.SkipNode
 
     def visit_math(self, node):
@@ -288,10 +308,10 @@ class ReVIEWTranslator(TextTranslator):
         self.add_text("}")
 
     def visit_math_block(self, node):
-        self.add_text('//texequation{\n')
+        self.add_text('//texequation{' + self.nl)
 
     def depart_math_block(self, node):
-        self.add_text('\n}\n')
+        self.add_text(self.end)
 
     def visit_footnote_reference(self, node):
         self.add_text('@<fn>{%s}' % node['refid'])
@@ -299,7 +319,7 @@ class ReVIEWTranslator(TextTranslator):
 
     def visit_footnote(self, node):
         label = node['ids'][0]
-        self.add_text('//footnote[%s][%s]\n' % (label, node.children[1].astext()))
+        self.add_text('//footnote[%s][%s]%s' % (label, node.children[1].astext(), self.nl))
         raise nodes.SkipNode
 
     def visit_row(self, node):
@@ -319,14 +339,14 @@ class ReVIEWTranslator(TextTranslator):
             title = node.children[0].astext()
             node.children.pop(0)
 
-        self.add_text(u'//table[%s][%s]{\n' % (label, title))
+        self.add_text(u'//table[%s][%s]{%s' % (label, title, self.nl))
 
     def depart_row(self, node):
         self.add_text(self.nl)
 
     def depart_thead(self, node):
-        self.add_text('------------\n')
+        self.add_text('------------' + self.nl)
 
     def depart_table(self, node):
         self.table = None
-        self.add_text("//}\n")
+        self.add_text("//}" + self.nl)
