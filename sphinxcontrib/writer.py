@@ -27,6 +27,19 @@ if False:
     from sphinx.builders.text import TextBuilder  # NOQA
 
 
+class Table(object):
+    def __init__(self):
+        self.col = 0
+        self.colcount = 0
+        self.colspec = None
+        self.rowcount = 0
+        self.had_head = False
+        self.has_problematic = False
+        self.has_verbatim = False
+        self.caption = None
+        self.longtable = False
+
+
 class ReVIEWWriter(writers.Writer):
     supported = ('review',)
     settings_spec = ('No options here.', '', ())
@@ -105,12 +118,17 @@ class ReVIEWTranslator(TextTranslator):
         self.sectionlevel += 1
 
     def depart_title(self, node):
+        if self.table:
+            return
+
         text = text_type(''.join(x[1] for x in self.states.pop() if x[0] == -1))
         self.stateindent.pop()
         text = unicode(text)  # TODO
 
-        title = [u'{} {}'.format(self.sectionchar * self.sectionlevel, text)]
-
+        title = ['', u'{} {}'.format(self.sectionchar * self.sectionlevel, text)]
+        if len(self.states) == 2 and len(self.states[-1]) == 0:
+            # remove an empty line before title if it is first section title in the document
+            title.pop(0)
         self.states[-1].append((0, title))
         self.add_text('\n')
 
@@ -281,3 +299,32 @@ class ReVIEWTranslator(TextTranslator):
         label = node['ids'][0]
         self.add_text('//footnote[%s][%s]\n' % (label, node.children[1].astext()))
         raise nodes.SkipNode
+
+    def visit_row(self, node):
+        self.add_text(u'\t'.join([ c.astext() for c in node.children]))
+        self.table.append([])
+
+    def visit_table(self, node):
+        if self.table:
+            raise NotImplementedError('Nested tables are not supported.')
+        self.table = [[]]
+        label = ""
+        if len(node['ids']) > 0:
+            label = node['ids'][0]
+
+        title = ""
+        if isinstance(node.children[0], nodes.title):
+            title = node.children[0].astext()
+            node.children.pop(0)
+
+        self.add_text(u'//table[%s][%s]{\n' % (label, title))
+
+    def depart_row(self, node):
+        self.add_text(self.nl)
+
+    def depart_thead(self, node):
+        self.add_text('------------\n')
+
+    def depart_table(self, node):
+        self.table = None
+        self.add_text("//}\n")
