@@ -76,6 +76,10 @@ def test_code(app, status, warnings):
     expected = ('@<code>{p = obj.ref_cnt}')
     assert expected in re
 
+    # cmd
+    expected = ('//cmd{\n$ cd /\n$ sudo rm -rf /\n//}')
+    assert expected in re
+
 
 @with_app(buildername='review', srcdir='tests/root', copy_srcdir_to_tmpdir=True)
 def test_admonition(app, status, warnings):
@@ -91,6 +95,21 @@ def test_admonition(app, status, warnings):
         '//warning[warningキャプション]{',
         '//warning{',
 #        '//quote{\n百聞は一見にしかず\n//}', #  TODO: 改行が入っている
+    ]
+
+    for e in expected:
+        assert e in re
+
+
+@with_app(buildername='review', srcdir='tests/root', copy_srcdir_to_tmpdir=True)
+def test_table(app, status, warnings):
+    app.build()
+
+    re = (app.outdir / 'table.re').read_text()
+
+    expected = [
+        '//table[compact-label][]{\nA\tnot A\n------------\nFalse\tTrue\nTrue\tFalse\n//}',
+        '//table[tablename][Frozen Delights!]{\nTreat\tQuantity\tDescription',
     ]
 
     for e in expected:

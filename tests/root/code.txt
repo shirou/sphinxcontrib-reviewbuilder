@@ -86,3 +86,13 @@ codeinline
 -------------
 
 codeinline ``p = obj.ref_cnt`` end
+
+
+cmd
+-----
+
+
+.. code-block:: bash
+
+   $ cd /
+   $ sudo rm -rf /

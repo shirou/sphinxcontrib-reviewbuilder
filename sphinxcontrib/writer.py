@@ -112,7 +112,6 @@ class ReVIEWTranslator(TextTranslator):
                 result.extend(result_rest)
         self.states[-1].extend(result)
 
-
     def visit_section(self, node):
         self._title_char = self.sectionchar * self.sectionlevel
         self.sectionlevel += 1
@@ -198,10 +197,16 @@ class ReVIEWTranslator(TextTranslator):
             self.end_state(first='{}. '.format(self.list_counter[-1]), end=None)
 
     def visit_literal_block(self, node):
-        self.new_state(0)
         # TODO: remove highlight args
+        self.new_state(0)
 
         lang = node['language']
+
+        if lang == "bash":  # use cmd
+            self.add_text('//cmd{\n')
+            return
+
+
         names = False  # get reference if exists
         t = "emlist"
         if 'names' in node and len(node['names']) > 0:
@@ -289,7 +294,6 @@ class ReVIEWTranslator(TextTranslator):
 
     def depart_math_block(self, node):
         self.add_text('\n}\n')
-
 
     def visit_footnote_reference(self, node):
         self.add_text('@<fn>{%s}' % node['refid'])
