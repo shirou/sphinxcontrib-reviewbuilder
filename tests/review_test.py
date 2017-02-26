@@ -37,6 +37,8 @@ def test_basic(app, status, warnings):
         '#@# コメントです',
         '#@# コメントブロック1\n#@# コメントブロック2',
         '//raw[|html|<hr width=50 size=10>]',
+        '@<u>{下線}を引きます',
+        '索引@<hidx>{インデックス}インデックスを作ります',  # TODO: インデックス文字が入っている
     ]
     for e in expected:
         assert e in re

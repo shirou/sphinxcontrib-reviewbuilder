@@ -101,3 +101,13 @@ section 6
 .. raw:: html
 
    <hr width=50 size=10>
+
+
+section 6.1
+++++++++++++++
+
+ここでは :sub:`下線` を引きます
+
+索引 :index:`インデックス` を作ります
+
+ペア :index:`index entries <pair: index; entry>`. は作りません。

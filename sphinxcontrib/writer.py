@@ -395,3 +395,26 @@ class ReVIEWTranslator(TextTranslator):
         self.add_text('//raw[|%s|%s]' % (form, node.astext()))
         self.end_state(wrap = False)
         raise nodes.SkipNode
+
+    def visit_subscript(self, node):
+        self.add_text('@<u>{')
+
+    def depart_subscript(self, node):
+        self.add_text('}')
+
+    def visit_superscript(self, node):
+        pass
+
+    def visit_index(self, node):
+        entries = node['entries'][0]
+        if entries[0] == "single":  # only single index is allowed
+            self.add_text('@<hidx>{%s}' % (entries[1]))
+            # TODO: インデックスの文字が入るのでhidxを使っている
+            i = 0
+            for c in node.parent.children:
+                if isinstance(c, nodes.target):
+                    break
+                i += 1
+            node.parent.children.pop(i + 1)
+
+        raise nodes.SkipNode
