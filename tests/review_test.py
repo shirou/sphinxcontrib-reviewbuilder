@@ -94,7 +94,7 @@ def test_admonition(app, status, warnings):
         '//info[hintキャプション]{',
         '//warning[warningキャプション]{',
         '//warning{',
-#        '//quote{\n百聞は一見にしかず\n//}', #  TODO: 改行が入っている
+        '//quote{\n百聞は一見にしかず\n//}',
     ]
 
     for e in expected:

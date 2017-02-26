@@ -278,10 +278,8 @@ class ReVIEWTranslator(TextTranslator):
     depart_warning = _depart_named_admonition
 
     def visit_block_quote(self, node):
-        self.add_text("//quote{\n")
-
-    def depart_block_quote(self, node):
-        self.add_text("\n//}\n")
+        self.add_text('//quote{\n%s\n//}\n' % (node.astext()))
+        raise nodes.SkipNode
 
     def visit_math(self, node):
         self.add_text("@<m>{")
