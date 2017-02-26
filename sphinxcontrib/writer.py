@@ -382,3 +382,9 @@ class ReVIEWTranslator(TextTranslator):
 
     def depart_figure(self, node):
         self.end_state()
+
+    def visit_comment(self, node):
+        for c in node.astext().splitlines():
+            self.add_text('#@# %s%s' % (c, self.nl))
+
+        raise nodes.SkipNode

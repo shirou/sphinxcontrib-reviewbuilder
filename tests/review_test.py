@@ -34,6 +34,8 @@ def test_basic(app, status, warnings):
         '@<href>{https://github.com/kmuto/review/blob/master/doc/format.rdoc}',
         'ここは@<fn>{f1}脚注@<fn>{f2}',
         '//footnote[f1][脚注1]',
+        '#@# コメントです',
+        '#@# コメントブロック1\n#@# コメントブロック2',
     ]
     for e in expected:
         assert e in re
