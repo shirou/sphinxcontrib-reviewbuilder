@@ -1,0 +1,4 @@
+tests/__pycache__
+tests/root/_build
+*.pyc
+.cache

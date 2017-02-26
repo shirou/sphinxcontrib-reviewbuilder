@@ -1,0 +1,88 @@
+======
+code
+======
+
+list
+-----
+
+.. code-block:: c
+   :name: なにもなしname
+
+   int
+   main(int argc, char **argv)
+   {
+       puts("OK");
+       return 0;
+   }
+
+.. code-block:: ruby
+   :name: 行番号付きname
+   :linenos:
+
+   puts "hello world!"
+
+
+.. code-block:: c
+   :name: キャプション付きname
+   :caption: キャプション
+
+   int
+   main(int argc, char **argv)
+   {
+       puts("OK");
+       return 0;
+   }
+
+
+.. code-block:: ruby
+   :linenos:
+   :name: 行番号付きキャプション付きname
+   :caption: 行番号付きキャプション
+
+   puts "hello world!"
+
+
+em
+-----
+
+.. code-block:: c
+
+   int
+   main(int argc, char **argv)
+   {
+       puts("OK");
+       return 0;
+   }
+
+.. code-block:: c
+   :caption: emcaption
+
+   int
+   main(int argc, char **argv)
+   {
+       puts("OK");
+       return 0;
+   }
+
+
+
+
+.. code-block:: ruby
+   :linenos:
+
+   puts "hello world!"
+
+firstlinenum
+------------------
+
+.. code-block:: python
+   :linenos:
+   :lineno-start: 100
+
+   print("100!!")
+
+
+codeinline
+-------------
+
+codeinline ``p = obj.ref_cnt`` end

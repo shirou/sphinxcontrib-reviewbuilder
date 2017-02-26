@@ -1,0 +1,42 @@
+囲み記事など
+============
+
+
+
+囲み記事
+--------
+
+.. tip:: tipキャプション
+
+   Tipsです
+
+.. note:: noteキャプション
+
+   ノートです
+
+.. danger:: dangerキャプション
+
+   dangerはcautionになります。
+
+.. hint:: hintキャプション
+
+   hintはinfoになります
+
+
+.. warning:: warningキャプション
+
+   warningです。
+
+
+.. warning::
+
+   warningです。キャプションなしです。
+
+
+
+引用
+-----
+
+引用
+
+  百聞は一見にしかず

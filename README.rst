@@ -33,14 +33,21 @@ How to use
 
 ::
 
-  % sphinx-build -b review -d build/doctrees   source build/review
+  % make review
 
 or you can add this command line to your Makefile.
 
 Repository
 ==========
 
-https://bitbucket.org/r_rudi/sphinxcontrib-reviewbuilder
+https://github.com/shirou/sphinxcontrib-reviewbuilder
+
+
+TODO
+=======
+
+- literal block includes highlight args
+
 
 License
 ========
