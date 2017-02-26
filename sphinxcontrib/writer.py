@@ -45,7 +45,6 @@ class ReVIEWWriter(writers.Writer):
         self.document.walkabout(visitor)
         self.output = visitor.body
 
-MAXWIDTH = 9999
 STDINDENT = 0
 
 
@@ -65,6 +64,41 @@ class ReVIEWTranslator(TextTranslator):
         "error": "caution",
         "hint": "info",
     }
+
+    def end_state(self, wrap=True, end=[''], first=None):
+        content = self.states.pop()
+        maxindent = sum(self.stateindent)
+        indent = self.stateindent.pop()
+        result = []
+        toformat = []
+
+        def do_format():
+            if not toformat:
+                return
+            res = ''.join(toformat).splitlines()
+            if end:
+                res += end
+            result.append((indent, res))
+        for itemindent, item in content:
+            if itemindent == -1:
+                toformat.append(item)
+            else:
+                do_format()
+                result.append((indent + itemindent, item))
+                toformat = []
+        do_format()
+        if first is not None and result:
+            itemindent, item = result[0]
+            result_rest, result = result[1:], []
+            if item:
+                toformat = [first + ' '.join(item)]
+                do_format()  # re-create `result` from `toformat`
+                _dummy, new_item = result[0]
+                result.insert(0, (itemindent - indent, [new_item[0]]))
+                result[1] = (itemindent, new_item[1:])
+                result.extend(result_rest)
+        self.states[-1].extend(result)
+
 
     def visit_section(self, node):
         self._title_char = self.sectionchar * self.sectionlevel
@@ -88,11 +122,11 @@ class ReVIEWTranslator(TextTranslator):
         self.add_text('}')
 
     def visit_reference(self, node):
-        """E.g. link or email address."""
-        self.add_text('@<href>{')
-
-    def depart_reference(self, node):
-        self.add_text('}')
+        if 'name' in node:
+            self.add_text('@<href>{%s,%s}' % (node['refuri'], node['name']))
+        else:
+            self.add_text('@<href>{%s}' % (node['refuri']))
+        raise nodes.SkipNode
 
     def visit_emphasis(self, node):
         self.add_text('@<i>{')
@@ -135,11 +169,11 @@ class ReVIEWTranslator(TextTranslator):
 
     def depart_term(self, node):
         if not self._classifier_count_in_li:
-            self.end_state(first=" : ", end=None)
+            self.end_state(first=" : ", end='')
 
     def depart_list_item(self, node):
         if self.list_counter[-1] == -1:
-            self.end_state(first='{} '.format('*' * len(self.list_counter)), end=None)
+            self.end_state(first='{} '.format('*' * len(self.list_counter)), end='')
         elif self.list_counter[-1] == -2:
             pass
         else:
@@ -189,18 +223,17 @@ class ReVIEWTranslator(TextTranslator):
             caption = None
             if len(node.children) > 1:
                 caption = node.children[0].astext()
-                # TODO captionテキストを取り除かなければいけない
+                node.children.pop(0)
             if caption:
-                f = u'//%s[%s]{' % (self.admonitionlabels[name], caption)
+                f = u'//%s[%s]{\n' % (self.admonitionlabels[name], caption)
             else:
-                f = u'//%s{' % (self.admonitionlabels[name])
+                f = u'//%s{\n' % (self.admonitionlabels[name])
             self.add_text(f)
-            self.new_state(0)
 
         return visit_admonition
 
     def _depart_named_admonition(self, node):
-        self.end_state(end=['//}', '\n'])
+        self.add_text("\n//}\n")
 
     visit_attention = _make_visit_admonition('attention')
     depart_attention = _depart_named_admonition
@@ -222,10 +255,29 @@ class ReVIEWTranslator(TextTranslator):
     depart_warning = _depart_named_admonition
 
     def visit_block_quote(self, node):
-        self.add_text("//quote{")
-        self.new_state(0)
+        self.add_text("//quote{\n")
 
     def depart_block_quote(self, node):
-        # TODO: 空白行が入ってします
-        self.end_state(end=["//}"], wrap=False)
-        self.add_text("//}")
+        self.add_text("\n//}\n")
+
+    def visit_math(self, node):
+        self.add_text("@<m>{")
+
+    def depart_math(self, node):
+        self.add_text("}")
+
+    def visit_math_block(self, node):
+        self.add_text('//texequation{\n')
+
+    def depart_math_block(self, node):
+        self.add_text('\n}\n')
+
+
+    def visit_footnote_reference(self, node):
+        self.add_text('@<fn>{%s}' % node['refid'])
+        raise nodes.SkipNode
+
+    def visit_footnote(self, node):
+        label = node['ids'][0]
+        self.add_text('//footnote[%s][%s]\n' % (label, node.children[1].astext()))
+        raise nodes.SkipNode

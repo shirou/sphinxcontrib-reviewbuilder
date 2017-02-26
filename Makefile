@@ -1,3 +1,3 @@
 test:
-#	pip uninstall -y sphinxcontrib-reviewbuilder && pip install .
+	pip uninstall -y sphinxcontrib-reviewbuilder && pip install .
 	py.test

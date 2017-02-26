@@ -48,6 +48,11 @@ SPARC
 section 4.0
 -----------
 
+ここは [#f1]_ 脚注 [#f2]_
+
+.. [#f1] 脚注1
+.. [#f2] 脚注2
+
 
 
 section 5
@@ -60,3 +65,14 @@ section 4.1
 -----------
 
 `フォーマット <https://github.com/kmuto/review/blob/master/doc/format.rdoc>`_
+
+https://github.com/kmuto/review/blob/master/doc/format.rdoc
+
+section 5.1
+~~~~~~~~~~~
+
+.. math::
+
+   (a + b)^2 = a^2 + 2ab + b^2
+
+   (a - b)^2 = a^2 - 2ab + b^2
