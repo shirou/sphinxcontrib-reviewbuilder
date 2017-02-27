@@ -7,15 +7,14 @@ Sphinx ReVIEW builder. ReVIEW is a easy-to-use digital publishing
 system for books and ebooks.
 
 ReVIEW: https://github.com/kmuto/review
-
 '''
 
-requires = ['Sphinx>=0.6', 'setuptools']
+requires = ['Sphinx>=1.2', 'setuptools']
 
 setup(
     name='sphinxcontrib-reviewbuilder',
-    version='0.1.0',
-    url='http://bitbucket.org/r_rudi/sphinxcontrib-reviewbuilder',
+    version='0.0.1',
+    url='http://github.com/shirou/sphinxcontrib-reviewbuilder',
     download_url='http://pypi.python.org/pypi/sphinxcontrib-reviewbuilder',
     license='LGPL',
     author='WAKAYAMA Shirou',
