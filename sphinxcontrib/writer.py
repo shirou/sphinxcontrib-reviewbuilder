@@ -58,6 +58,7 @@ class ReVIEWWriter(writers.Writer):
         self.document.walkabout(visitor)
         self.output = visitor.body
 
+
 STDINDENT = 0
 
 
@@ -96,7 +97,6 @@ class ReVIEWTranslator(TextTranslator):
         self.sectionlevel = 0
         self.lineblocklevel = 0
         self.table = None
-
 
     def end_state(self, wrap=True, end=[''], first=None):
         content = self.states.pop()
@@ -226,7 +226,6 @@ class ReVIEWTranslator(TextTranslator):
             self.add_text('//cmd{' + self.nl)
             return
 
-
         names = False  # get reference if exists
         t = "emlist"
         if 'names' in node and len(node['names']) > 0:
@@ -323,7 +322,7 @@ class ReVIEWTranslator(TextTranslator):
         raise nodes.SkipNode
 
     def visit_row(self, node):
-        self.add_text(u'\t'.join([ c.astext() for c in node.children]))
+        self.add_text(u'\t'.join([c.astext() for c in node.children]))
         self.table.append([])
 
     def visit_table(self, node):
@@ -376,7 +375,6 @@ class ReVIEWTranslator(TextTranslator):
         self.add_text(self.nl + '}' + self.nl)
         raise nodes.SkipNode
 
-
     def visit_legend(self, node):
         raise nodes.SkipNode
 
@@ -393,7 +391,7 @@ class ReVIEWTranslator(TextTranslator):
         form = node.get('format', '')
         self.new_state(0)
         self.add_text('//raw[|%s|%s]' % (form, node.astext()))
-        self.end_state(wrap = False)
+        self.end_state(wrap=False)
         raise nodes.SkipNode
 
     def visit_subscript(self, node):

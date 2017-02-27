@@ -62,7 +62,6 @@ def test_code(app, status, warnings):
     #    expected = ('//listnum[行番号付きキャプション付きname][行番号付きキャプション][ruby]{')
     #    assert expected in re
 
-
     # em
     expected = [
         '//emlist[][c]{',
@@ -119,6 +118,7 @@ def test_table(app, status, warnings):
 
     for e in expected:
         assert e in re
+
 
 @with_app(buildername='review', srcdir='tests/root', copy_srcdir_to_tmpdir=True)
 def test_table(app, status, warnings):

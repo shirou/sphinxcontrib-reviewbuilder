@@ -16,7 +16,7 @@ from sphinx.util.console import bold, darkgreen
 
 from writer import ReVIEWWriter
 
-TEMPLATE="""
+TEMPLATE = """
 PREDEF:
 
 CHAPS:
@@ -26,7 +26,6 @@ APPENDIX:
 
 POSTDEF:
 """
-
 
 
 # from japanesesupport.py
@@ -108,6 +107,7 @@ class ReVIEWBuilder(TextBuilder):
                 copy_asset_file(path.join(self.srcdir, src),
                                 outfile)
             self.info()
+
 
 def setup(app):
     app.add_builder(ReVIEWBuilder)
