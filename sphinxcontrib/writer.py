@@ -210,11 +210,11 @@ class ReVIEWTranslator(TextTranslator):
 
     def depart_list_item(self, node):
         if self.list_counter[-1] == -1:
-            self.end_state(first='{} '.format('*' * len(self.list_counter)), end='')
+            self.end_state(first=' {} '.format('*' * len(self.list_counter)), end='')
         elif self.list_counter[-1] == -2:
             pass
         else:
-            self.end_state(first='{}. '.format(self.list_counter[-1]), end=None)
+            self.end_state(first=' {}. '.format(self.list_counter[-1]), end=None)
 
     def visit_literal_block(self, node):
         # TODO: remove highlight args
