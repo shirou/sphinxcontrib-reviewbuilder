@@ -20,6 +20,8 @@ section 2
 section 3
 ---------
 
+.. _list-in-basic:
+
 * 第1の項目
 
   * 第1の項目のネスト

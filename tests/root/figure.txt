@@ -1,12 +1,17 @@
+.. _figure-chap:
+
 図
 ====
+
+
+.. _figure-sec:
 
 figure
 --------
 
 .. figure:: picture.png
    :alt: figureのaltです。無視されます
-   :name: figureのlabelです
+   :name: figure-label
 
    ここはfigureのキャプションです。
 

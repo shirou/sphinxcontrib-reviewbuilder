@@ -1,0 +1,10 @@
+参照
+======
+
+図の章 :ref:`figure-chap` です
+
+リスト :ref:`リスト <list-in-basic>` です
+
+テーブル :ref:`テーブル <compact-label>` です
+
+numfig :numref:`figure-label` です

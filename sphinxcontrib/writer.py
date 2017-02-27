@@ -159,10 +159,14 @@ class ReVIEWTranslator(TextTranslator):
         self.add_text('}')
 
     def visit_reference(self, node):
-        if 'name' in node:
-            self.add_text('@<href>{%s,%s}' % (node['refuri'], node['name']))
-        else:
-            self.add_text('@<href>{%s}' % (node['refuri']))
+        if 'internal' in node and node['internal']:
+            # TODO: ターゲットごとに変える
+            self.add_text('@<chap>{%s}' % (node['refuri'].replace('#', '')))
+        else:  # URL
+            if 'name' in node:
+                self.add_text('@<href>{%s,%s}' % (node['refuri'], node['name']))
+            else:
+                self.add_text('@<href>{%s}' % (node['refuri']))
         raise nodes.SkipNode
 
     def visit_emphasis(self, node):
@@ -414,5 +418,14 @@ class ReVIEWTranslator(TextTranslator):
                     break
                 i += 1
             node.parent.children.pop(i + 1)
+
+        raise nodes.SkipNode
+
+    def visit_number_reference(self, node):
+        text = nodes.Text(node.get('title', ''))
+        if 'Fig' in text:
+            refuri = node.get('refuri', '')
+            self.add_text('@<img>{%s}' % refuri.replace('#', ''))
+            node.children.pop(0)
 
         raise nodes.SkipNode
