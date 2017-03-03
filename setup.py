@@ -13,7 +13,7 @@ requires = ['Sphinx>=1.2', 'setuptools']
 
 setup(
     name='sphinxcontrib-reviewbuilder',
-    version='0.0.1',
+    version='0.0.2',
     url='http://github.com/shirou/sphinxcontrib-reviewbuilder',
     download_url='http://pypi.python.org/pypi/sphinxcontrib-reviewbuilder',
     license='LGPL',
