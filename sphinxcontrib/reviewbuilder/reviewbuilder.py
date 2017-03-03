@@ -49,7 +49,7 @@ class ReVIEWBuilder(TextBuilder):
         try:
             with codecs.open(outfilename, 'w', 'utf-8') as f:
                 f.write(self.writer.output)
-            self.out_files.append(outfilename)
+            self.out_files.append(os_path(docname) + self.out_suffix)
         except (IOError, OSError) as err:
             self.warn("error writing file %s: %s" % (outfilename, err))
 
@@ -82,7 +82,7 @@ class ReVIEWBuilder(TextBuilder):
     def finish(self):
         chaps = []
         for f in self.out_files:
-            chaps.append('  - %s' % path.basename(f))
+            chaps.append('  - %s' % f)
         catalogfile = path.join(self.outdir, "catalog.yml")
         with codecs.open(catalogfile, 'w', 'utf-8') as f:
             f.write(TEMPLATE % '\n'.join(chaps))
