@@ -8,7 +8,6 @@ from six import iteritems
 from docutils import nodes
 from docutils.io import FileOutput, StringOutput
 from docutils.frontend import OptionParser
-from docutils.nodes import Text, paragraph
 from sphinx.builders.text import TextBuilder
 from sphinx.util.fileutil import copy_asset_file
 from sphinx.util.osutil import ensuredir, os_path
@@ -26,17 +25,6 @@ APPENDIX:
 
 POSTDEF:
 """
-
-
-# from japanesesupport.py
-def trunc_whitespace(app, doctree, docname):
-    for node in doctree.traverse(Text):
-        if isinstance(node.parent, paragraph):
-            newtext = node.astext()
-            for c in "\n\r\t":
-                newtext = newtext.replace(c, "")
-            newtext = newtext.strip()
-            node.parent.replace(node, Text(newtext))
 
 
 class ReVIEWBuilder(TextBuilder):
@@ -107,8 +95,3 @@ class ReVIEWBuilder(TextBuilder):
                 copy_asset_file(path.join(self.srcdir, src),
                                 outfile)
             self.info()
-
-
-def setup(app):
-    app.add_builder(ReVIEWBuilder)
-    app.connect("doctree-resolved", trunc_whitespace)
