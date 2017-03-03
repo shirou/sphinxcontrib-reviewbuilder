@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import absolute_import
+
+
 from os import path
 import codecs
 
@@ -13,7 +16,7 @@ from sphinx.util.fileutil import copy_asset_file
 from sphinx.util.osutil import ensuredir, os_path
 from sphinx.util.console import bold, darkgreen
 
-from writer import ReVIEWWriter
+from sphinxcontrib.reviewbuilder.writer import ReVIEWWriter
 
 TEMPLATE = """
 PREDEF:

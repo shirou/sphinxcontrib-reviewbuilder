@@ -142,7 +142,7 @@ class ReVIEWTranslator(TextTranslator):
 
         text = text_type(''.join(x[1] for x in self.states.pop() if x[0] == -1))
         self.stateindent.pop()
-        text = unicode(text)  # TODO
+        text = text_type(text)
 
         title = ['', u'{} {}'.format(self.sectionchar * self.sectionlevel, text)]
         if len(self.states) == 2 and len(self.states[-1]) == 0:
