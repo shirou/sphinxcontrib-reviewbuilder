@@ -105,6 +105,11 @@ section 6
    <hr width=50 size=10>
 
 
+.. index::
+   single: execution; context
+   pair: loop; statement
+   triple: module; search; path
+
 section 6.1
 ++++++++++++++
 
@@ -112,4 +117,4 @@ section 6.1
 
 索引 :index:`インデックス` を作ります
 
-ペア :index:`index entries <pair: index; entry>`. は作りません。
+ペア :index:`index entries <pair: index; entry>`. は連続して出ます。

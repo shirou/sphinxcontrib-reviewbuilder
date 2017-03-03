@@ -408,16 +408,30 @@ class ReVIEWTranslator(TextTranslator):
         pass
 
     def visit_index(self, node):
-        entries = node['entries'][0]
-        if entries[0] == "single":  # only single index is allowed
-            self.add_text('@<hidx>{%s}' % (entries[1]))
-            # TODO: インデックスの文字が入るのでhidxを使っている
-            i = 0
-            for c in node.parent.children:
-                if isinstance(c, nodes.target):
-                    break
-                i += 1
-            node.parent.children.pop(i + 1)
+        for entry in node.get('entries', []):
+            e = []
+            if entry[0] == 'single':
+                t = [se.strip() for se in entry[1].split(';')]
+                e.append('<<>>'.join(t))
+            elif entry[0] == 'pair':
+                for pair in entry[1].split(';'):
+                    e.append(pair.strip())
+            else:
+                self.builder.warn('index only support single and pair: %s, line:%d' %
+                                  (entry[0], node.line))
+                continue
+
+            for target in e:
+                # TODO: インデックスの文字が入るのでhidxを使っている
+                self.add_text('@<hidx>{%s}' % target)
+
+#        i = 0
+#        for c in node.parent.children:
+#            if isinstance(c, nodes.target):
+#                break
+#            i += 1
+#
+#        node.parent.children.pop(i + 1)
 
         raise nodes.SkipNode
 
