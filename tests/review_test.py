@@ -128,7 +128,7 @@ def test_table(app, status, warnings):
 
     expected = [
         '//image[picture][ここはfigureのキャプションです。]{',
-        '//image[picture]{',
+        '//image[picture][]{',
     ]
 
     for e in expected:

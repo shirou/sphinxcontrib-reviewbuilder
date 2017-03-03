@@ -372,11 +372,11 @@ class ReVIEWTranslator(TextTranslator):
         if caption:
             self.add_text('//image[%s][%s]{%s' % (filename, caption, self.nl))
         else:
-            self.add_text('//image[%s]{%s' % (filename, self.nl))
+            self.add_text('//image[%s][]{%s' % (filename, self.nl))
         if legend:
             self.add_text(legend)
 
-        self.add_text(self.nl + '}' + self.nl)
+        self.add_text(self.nl + "//}" + self.nl)
         raise nodes.SkipNode
 
     def visit_legend(self, node):
