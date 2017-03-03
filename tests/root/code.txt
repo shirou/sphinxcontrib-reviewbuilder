@@ -2,6 +2,20 @@
 code
 ======
 
+normal block
+------------
+
+
+この場合、guessが使われます。 ::
+
+  int
+  main(int argc, char **argv)
+   {
+       puts("OK");
+       return 0;
+   }
+
+
 list
 -----
 

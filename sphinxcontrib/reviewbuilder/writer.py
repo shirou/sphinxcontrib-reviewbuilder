@@ -224,7 +224,7 @@ class ReVIEWTranslator(TextTranslator):
         # TODO: remove highlight args
         self.new_state(0)
 
-        lang = node['language']
+        lang = node.get('language', 'guess')
 
         if lang == "bash":  # use cmd
             self.add_text('//cmd{' + self.nl)
