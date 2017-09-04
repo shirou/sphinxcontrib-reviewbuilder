@@ -17,6 +17,7 @@ from sphinx import addnodes
 from sphinx.locale import admonitionlabels, _
 from sphinx.util import logging
 from sphinx.util.i18n import format_date
+from sphinx import version_info as SPHINX_VERSION
 
 from sphinx.writers.text import TextTranslator
 
@@ -26,7 +27,10 @@ if False:
     from typing import Any, Callable, Tuple, Union  # NOQA
     from sphinx.builders.text import TextBuilder  # NOQA
 
-logger = logging.getLogger(__name__)
+if SPHINX_VERSION < (1, 6):
+    pass
+else:
+    logger = logging.getLogger(__name__)
 
 
 class Table(object):
@@ -53,9 +57,14 @@ class ReVIEWWriter(writers.Writer):
         # type: (ReviewBuilder) -> None
         writers.Writer.__init__(self)
         self.builder = builder
+        if SPHINX_VERSION < (1, 6):
+            self.translator_class = ReVIEWTranslator
 
     def translate(self):
-        visitor = self.builder.create_translator(self.document, self.builder)
+        if SPHINX_VERSION < (1, 6):
+            visitor = self.translator_class(self.document, self.builder)
+        else:
+            visitor = self.builder.create_translator(self.document, self.builder)
         self.document.walkabout(visitor)
         self.output = visitor.body
 
@@ -162,7 +171,12 @@ class ReVIEWTranslator(TextTranslator):
     def visit_reference(self, node):
         if not node.get('refuri'):
             pnode = node.parent
-            logger.warning('%s,%s: No refuri for %r', pnode.source, pnode.line, node.astext())
+            if SPHINX_VERSION < (1, 6):
+                self.builder.warn('%s,%s: No refuri for %r' % (
+                                  pnode.source, pnode.line, node.astext()))
+            else:
+                logger.warning('%s,%s: No refuri for %r' % (
+                               pnode.source, pnode.line, node.astext()))
 
         if 'internal' in node and node['internal']:
             # TODO: ターゲットごとに変える
