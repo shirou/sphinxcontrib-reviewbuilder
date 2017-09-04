@@ -35,6 +35,8 @@ class ReVIEWBuilder(TextBuilder):
     format = 'review'
     out_suffix = '.re'
     out_files = []
+    supported_image_types = ['image/svg+xml', 'image/png',
+                             'image/gif', 'image/jpeg']
     default_translator_class = ReVIEWTranslator
 
     def prepare_writing(self, docnames):
