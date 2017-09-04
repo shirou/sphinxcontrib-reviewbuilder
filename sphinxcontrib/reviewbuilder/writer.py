@@ -51,10 +51,9 @@ class ReVIEWWriter(writers.Writer):
         # type: (ReviewBuilder) -> None
         writers.Writer.__init__(self)
         self.builder = builder
-        self.translator_class = self.builder.translator_class or ReVIEWTranslator
 
     def translate(self):
-        visitor = self.translator_class(self.document, self.builder)
+        visitor = self.builder.create_translator(self.document, self.builder)
         self.document.walkabout(visitor)
         self.output = visitor.body
 

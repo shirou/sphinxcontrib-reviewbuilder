@@ -16,7 +16,7 @@ from sphinx.util.fileutil import copy_asset_file
 from sphinx.util.osutil import ensuredir, os_path
 from sphinx.util.console import bold, darkgreen
 
-from sphinxcontrib.reviewbuilder.writer import ReVIEWWriter
+from sphinxcontrib.reviewbuilder.writer import ReVIEWWriter, ReVIEWTranslator
 
 TEMPLATE = """
 PREDEF:
@@ -35,6 +35,7 @@ class ReVIEWBuilder(TextBuilder):
     format = 'review'
     out_suffix = '.re'
     out_files = []
+    default_translator_class = ReVIEWTranslator
 
     def prepare_writing(self, docnames):
         self.writer = ReVIEWWriter(self)
