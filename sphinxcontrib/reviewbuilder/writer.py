@@ -26,6 +26,8 @@ if False:
     from typing import Any, Callable, Tuple, Union  # NOQA
     from sphinx.builders.text import TextBuilder  # NOQA
 
+logger = logging.getLogger(__name__)
+
 
 class Table(object):
     def __init__(self):
@@ -158,14 +160,18 @@ class ReVIEWTranslator(TextTranslator):
         self.add_text('}')
 
     def visit_reference(self, node):
+        if not node.get('refuri'):
+            pnode = node.parent
+            logger.warning('%s,%s: No refuri for %r', pnode.source, pnode.line, node.astext())
+
         if 'internal' in node and node['internal']:
             # TODO: ターゲットごとに変える
-            self.add_text('@<chap>{%s}' % (node['refuri'].replace('#', '')))
+            self.add_text('@<chap>{%s}' % (node.get('refuri', '').replace('#', '')))
         else:  # URL
             if 'name' in node:
-                self.add_text('@<href>{%s,%s}' % (node['refuri'], node['name']))
+                self.add_text('@<href>{%s,%s}' % (node.get('refuri', ''), node['name']))
             else:
-                self.add_text('@<href>{%s}' % (node['refuri']))
+                self.add_text('@<href>{%s}' % (node.get('refuri', '')))
         raise nodes.SkipNode
 
     def visit_emphasis(self, node):
