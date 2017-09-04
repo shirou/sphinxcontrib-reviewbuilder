@@ -27,11 +27,6 @@ if False:
     from typing import Any, Callable, Tuple, Union  # NOQA
     from sphinx.builders.text import TextBuilder  # NOQA
 
-if SPHINX_VERSION < (1, 6):
-    pass
-else:
-    logger = logging.getLogger(__name__)
-
 
 class Table(object):
     def __init__(self):
@@ -169,15 +164,6 @@ class ReVIEWTranslator(TextTranslator):
         self.add_text('}')
 
     def visit_reference(self, node):
-        if not node.get('refuri'):
-            pnode = node.parent
-            if SPHINX_VERSION < (1, 6):
-                self.builder.warn('%s,%s: No refuri for %r' % (
-                                  pnode.source, pnode.line, node.astext()))
-            else:
-                logger.warning('%s,%s: No refuri for %r' % (
-                               pnode.source, pnode.line, node.astext()))
-
         if 'internal' in node and node['internal']:
             # TODO: ターゲットごとに変える
             self.add_text('@<chap>{%s}' % (node.get('refuri', '').replace('#', '')))

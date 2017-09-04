@@ -58,6 +58,10 @@ class ReVIEWBuilder(TextBuilder):
 
         self.post_process_images(docname, doctree)
 
+    def get_target_uri(self, docname, typ=None):
+        # type: (unicode, unicode) -> unicode
+        return docname
+
     def post_process_images(self, docname, doctree):
         """Pick the best candidate for all image URIs."""
         for node in doctree.traverse(nodes.image):
