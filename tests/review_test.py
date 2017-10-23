@@ -208,6 +208,23 @@ def test_reference(app, status, warning):
         assert e in re
 
 
+@pytest.mark.sphinx('review')
+def test_hyperlink(app, status, warning):
+    app.builder.build_all()
+
+    re = (app.outdir / 'hyperlink.re').text()
+
+    expected = [
+        u'@<href>{https://www.oreilly.co.jp/books/9784873118192/}',
+        u'@<href>{https://www.oreilly.co.jp/books/9784873118192/,Getting Started with Sphinx (2nd Ed)}',
+        u'@<href>{https://sphinx-doc.org/,sphinx}',
+        u'@<href>{https://www.python.org/dev/peps/pep-0287,PEP 287}',
+    ]
+
+    for e in expected:
+        assert e in re
+
+
 @pytest.mark.sphinx('review', confoverrides={'review_keep_comments': True})
 def test_keep_comments(app, status, warning):
     app.builder.build_all()
