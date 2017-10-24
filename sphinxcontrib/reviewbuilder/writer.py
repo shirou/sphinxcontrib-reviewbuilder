@@ -349,6 +349,14 @@ class ReVIEWTranslator(TextTranslator):
 
         self.add_text(u'//table[%s][%s]{%s' % (label, title, self.nl))
 
+    def visit_entry(self, node):
+        if len(node) == 0:
+            # Fill single-dot ``.`` for empty table cells
+            self.add_text('.')
+            raise nodes.SkipNode
+        else:
+            TextTranslator.visit_entry(self, node)
+
     def depart_row(self, node):
         self.add_text(self.nl)
 

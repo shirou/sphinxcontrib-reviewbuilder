@@ -29,3 +29,16 @@ csv-table
    "Crunchy Frog", 1.49, "If we took the bones out, it wouldn't be
    crunchy, now would it?"
    "Gannet Ripple", 1.99, "On a stick!"
+
+
+table having empty cell
+-----------------------
+
+.. _empty-cell:
+
+=====  =====
+  A    not A
+=====  =====
+False
+True   False
+=====  =====
