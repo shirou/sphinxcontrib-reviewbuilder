@@ -71,9 +71,9 @@ class DefinitionListTransform(SphinxTransform):
                     deflist.parent.insert(pos + 1, node)
 
 
-class NumberReferenceConverter(SphinxTransform):
-    """Convert number references to Re:VIEW's reference notations."""
-    default_priority = 5  # before ReferencesResolver
+class ReVIEWReferenceResolver(SphinxTransform):
+    """Convert Sphinx-references to Re:VIEW's reference notations."""
+    default_priority = 5  # before Sphinx's ReferencesResolver
 
     def apply(self):
         if self.app.builder.name != 'review':
@@ -84,6 +84,8 @@ class NumberReferenceConverter(SphinxTransform):
                 self.resolve_numref(node)
             elif node['refdomain'] == 'std' and node['reftype'] == 'doc':
                 self.resolve_doc(node)
+            elif node['refdomain'] == 'std' and node['reftype'] == 'ref':
+                self.resolve_section_ref(node)
 
     def resolve_numref(self, node):
         docname, target_node = self.lookup(node)
@@ -117,6 +119,29 @@ class NumberReferenceConverter(SphinxTransform):
         ref = nodes.Text(text, text)
         node.replace_self(ref)
 
+    def resolve_section_ref(self, node):
+        docname, target_node = self.lookup(node)
+        if target_node is None:
+            logger.warning('Invalid reference: %s', node, location=node)
+            node.replace_self(node[0])
+            return
+
+        if docname == self.env.docname:
+            prefix = ''
+        else:
+            prefix = os.path.basename(docname) + '|'
+
+        if isinstance(target_node, nodes.section):
+            if isinstance(target_node.parent, nodes.document):
+                text = '@<chap>{%s}' % (os.path.basename(docname))
+            else:
+                text = '@<hd>{%s%s}' % (prefix, target_node['ids'][0])
+        else:
+            return  # skip
+
+        ref = nodes.Text(text, text)
+        node.replace_self(ref)
+
     def resolve_doc(self, node):
         text = '@<chap>{%s}' % os.path.basename(node['reftarget'])
         ref = nodes.Text(text, text)
@@ -138,4 +163,4 @@ class NumberReferenceConverter(SphinxTransform):
 
 def setup(app):
     app.add_post_transform(DefinitionListTransform)
-    app.add_post_transform(NumberReferenceConverter)
+    app.add_post_transform(ReVIEWReferenceResolver)

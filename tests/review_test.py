@@ -199,6 +199,8 @@ def test_reference(app, status, warning):
         u'numfig@<chap>{basic}です',
         u'numfig@<hd>{basic|section-2}です',
         u'doc@<chap>{basic}です',
+        u'ref@<chap>{basic}です',
+        u'ref@<hd>{basic|section-2}です',
     ]
 
     for e in expected:
