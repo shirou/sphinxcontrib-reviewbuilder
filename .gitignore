@@ -2,6 +2,7 @@ tests/__pycache__
 tests/root/_build
 *.pyc
 .cache
+.tox
 sphinxcontrib_reviewbuilder.egg-info/
 build
 dist
