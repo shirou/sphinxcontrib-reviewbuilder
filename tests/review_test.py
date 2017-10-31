@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from docutils.utils import column_width
-from sphinx.writers.text import MAXWIDTH
-
 from sphinx_testing import with_app
 
 
@@ -121,7 +118,7 @@ def test_table(app, status, warnings):
 
 
 @with_app(buildername='review', srcdir='tests/root', copy_srcdir_to_tmpdir=True)
-def test_table(app, status, warnings):
+def test_figure(app, status, warnings):
     app.build()
 
     re = (app.outdir / 'figure.re').read_text()
