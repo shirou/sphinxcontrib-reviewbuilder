@@ -215,6 +215,11 @@ class ReVIEWTranslator(TextTranslator):
             self.add_text('')
 
     def depart_list_item(self, node):
+        # remove trailing space
+        content = self.states[-1][-1][1]
+        if content and content[-1] == '':
+            content.pop()
+
         if self.list_counter[-1] == -1:
             self.end_state(first=' {} '.format('*' * len(self.list_counter)), end='')
         elif self.list_counter[-1] == -2:

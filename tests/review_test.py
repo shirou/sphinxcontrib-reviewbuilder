@@ -109,8 +109,8 @@ def test_list(app, status, warning):
     re = (app.outdir / 'list.re').text()
 
     expected = [
-        u' * 第3の項目 \n\nLorem ipsum dolor sit amet,\n',
-        u' 3. 第3の条件 \n\nLorem ipsum dolor sit amet,\n',
+        u' * 第3の項目\n\nLorem ipsum dolor sit amet,\n',
+        u' 3. 第3の条件\n\nLorem ipsum dolor sit amet,\n',
     ]
 
     for e in expected:
