@@ -9,20 +9,20 @@
 
 from __future__ import absolute_import
 
-from docutils.nodes import Text, paragraph
+from docutils import nodes
 
 from sphinxcontrib.reviewbuilder.reviewbuilder import ReVIEWBuilder
 
 
 # from japanesesupport.py
 def trunc_whitespace(app, doctree, docname):
-    for node in doctree.traverse(Text):
-        if isinstance(node.parent, paragraph):
+    for node in doctree.traverse(nodes.Text):
+        if isinstance(node.parent, nodes.paragraph):
             newtext = node.astext()
             for c in "\n\r\t":
                 newtext = newtext.replace(c, "")
             newtext = newtext.strip()
-            node.parent.replace(node, Text(newtext))
+            node.parent.replace(node, nodes.Text(newtext))
 
 
 def setup(app):
