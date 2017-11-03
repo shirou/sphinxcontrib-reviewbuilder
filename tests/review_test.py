@@ -111,7 +111,7 @@ def test_table(app, status, warnings):
     expected = [
         '//table[compact-label][]{\nA\tnot A\n------------\nFalse\tTrue\nTrue\tFalse\n//}',
         '//table[tablename][Frozen Delights!]{\nTreat\tQuantity\tDescription',
-        '//table[empty-cell][]{\nA\tnot A\n------------\nFalse\t.\nTrue\tFalse\n//}',
+        '//table[empty-cell][]{\n.\tnot A\n------------\nFalse\t.\n.\t.\n//}',
     ]
 
     for e in expected:

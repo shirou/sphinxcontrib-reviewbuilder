@@ -36,9 +36,12 @@ table having empty cell
 
 .. _empty-cell:
 
-=====  =====
-  A    not A
-=====  =====
-False
-True   False
-=====  =====
+.. list-table::
+   :header-rows: 1
+
+   * -
+     - not A
+   * - False
+     -
+   * -
+     -
