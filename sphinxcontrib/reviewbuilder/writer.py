@@ -352,8 +352,9 @@ class ReVIEWTranslator(TextTranslator):
     def depart_entry(self, node):
         TextTranslator.depart_entry(self, node)
 
-        # remove return code
+        # replace return codes by @<br>{}
         text = self.table[-1].pop().strip()
+        text = text.replace('\n', '@<br>{}')
         self.table[-1].append(text)
 
     def depart_row(self, node):

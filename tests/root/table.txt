@@ -45,3 +45,19 @@ table having empty cell
      -
    * -
      -
+
+
+a cell having multiple paragraph
+--------------------------------
+
+.. _multiple-paragraph:
+
+.. list-table::
+   :header-rows: 1
+
+   * - A
+     - not A
+   * - Lorem ipsum
+
+       dolor sit amet,
+     - consectetur adipiscing elit,
