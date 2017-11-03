@@ -1,6 +1,12 @@
 Sphinx ReVIEW builder
 =============================
 
+.. image:: https://badge.fury.io/py/sphinxcontrib-reviewbuilder.svg
+    :target: https://badge.fury.io/py/sphinxcontrib-reviewbuilder
+
+.. image:: https://circleci.com/gh/shirou/sphinxcontrib-reviewbuilder.svg?style=svg
+    :target: https://circleci.com/gh/shirou/sphinxcontrib-reviewbuilder
+
 Sphinx to ReVIEW builder.
 
 ReVIEW: https://github.com/kmuto/review
