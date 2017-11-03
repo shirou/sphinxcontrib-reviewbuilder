@@ -9,12 +9,11 @@ import codecs
 
 from six import iteritems
 from docutils import nodes
-from docutils.io import FileOutput, StringOutput
-from docutils.frontend import OptionParser
+from docutils.io import StringOutput
 from sphinx.builders.text import TextBuilder
 from sphinx.util.fileutil import copy_asset_file
 from sphinx.util.osutil import ensuredir, os_path
-from sphinx.util.console import bold, darkgreen
+from sphinx.util.console import bold
 
 from sphinxcontrib.reviewbuilder.writer import ReVIEWWriter, ReVIEWTranslator
 

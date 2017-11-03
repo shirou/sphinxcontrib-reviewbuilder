@@ -2,23 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import os
-import re
-import textwrap
-from itertools import groupby
 
-from six import itervalues, text_type
-from six.moves import zip_longest
-from six.moves import range
+from six import text_type
+from docutils import nodes, writers
 
-from docutils import nodes, writers, languages
-from docutils.utils import column_width
-
-from sphinx import addnodes
-from sphinx.locale import admonitionlabels, _
-from sphinx.util import logging
-from sphinx.util.i18n import format_date
 from sphinx import version_info as SPHINX_VERSION
-
 from sphinx.writers.text import TextTranslator
 
 
@@ -105,7 +93,6 @@ class ReVIEWTranslator(TextTranslator):
 
     def end_state(self, wrap=True, end=[''], first=None):
         content = self.states.pop()
-        maxindent = sum(self.stateindent)
         indent = self.stateindent.pop()
         result = []
         toformat = []
