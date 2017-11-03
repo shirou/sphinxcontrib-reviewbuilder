@@ -1,56 +1,56 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from sphinx_testing import with_app
+import pytest
 
 
-@with_app(buildername='review', srcdir='tests/root', copy_srcdir_to_tmpdir=True)
-def test_basic(app, status, warnings):
+@pytest.mark.sphinx('review')
+def test_basic(app, status, warning):
     app.build()
 
 #    import pdb; pdb.set_trace()
 
-    re = (app.outdir / 'basic.re').read_text()
+    re = (app.outdir / 'basic.re').text()
 
     expected = [
-        '= section 1',
-        '== section 2',
-        '=== section 3',
-        '=== section 4.0',
-        '==== section 5',
-        '=== section 4.1',
+        u'= section 1',
+        u'== section 2',
+        u'=== section 3',
+        u'=== section 4.0',
+        u'==== section 5',
+        u'=== section 4.1',
     ]
     for e in expected:
         assert e in re
 
     expected = [
-        '@<i>{強調}',
-        '@<b>{強い強調}',
-        '数式@<m>{a^2 + b^2 = c^2}です',
-        '@<href>{https://github.com/kmuto/review/blob/master/doc/format.rdoc,フォーマット}',
-        '@<href>{https://github.com/kmuto/review/blob/master/doc/format.rdoc}',
-        'ここは@<fn>{f1}脚注@<fn>{f2}',
-        '//footnote[f2][脚注2は@<i>{インライン}@<b>{要素}を@<href>{https://github.com/kmuto/review,含みます}]',
-        '#@# コメントです',
-        '#@# コメントブロック1\n#@# コメントブロック2',
-        '//raw[|html|<hr width=50 size=10>]',
-        '@<u>{下線}を引きます',
-        '索引@<hidx>{インデックス}インデックスを作ります',  # TODO: インデックス文字が入っている
+        u'@<i>{強調}',
+        u'@<b>{強い強調}',
+        u'数式@<m>{a^2 + b^2 = c^2}です',
+        u'@<href>{https://github.com/kmuto/review/blob/master/doc/format.rdoc,フォーマット}',
+        u'@<href>{https://github.com/kmuto/review/blob/master/doc/format.rdoc}',
+        u'ここは@<fn>{f1}脚注@<fn>{f2}',
+        u'//footnote[f2][脚注2は@<i>{インライン}@<b>{要素}を@<href>{https://github.com/kmuto/review,含みます}]',
+        u'#@# コメントです',
+        u'#@# コメントブロック1\n#@# コメントブロック2',
+        u'//raw[|html|<hr width=50 size=10>]',
+        u'@<u>{下線}を引きます',
+        u'索引@<hidx>{インデックス}インデックスを作ります',  # TODO: インデックス文字が入っている
     ]
     for e in expected:
         assert e in re
 
 
-@with_app(buildername='review', srcdir='tests/root', copy_srcdir_to_tmpdir=True)
-def test_code(app, status, warnings):
+@pytest.mark.sphinx('review')
+def test_code(app, status, warning):
     app.build()
 
-    re = (app.outdir / 'code.re').read_text()
+    re = (app.outdir / 'code.re').text()
 
     # list
-    expected = ('//list[なにもなしname][][c]{')
+    expected = (u'//list[なにもなしname][][c]{')
     assert expected in re
-    expected = ('//listnum[行番号付きname][][ruby]{')
+    expected = (u'//listnum[行番号付きname][][ruby]{')
     assert expected in re
 
     # TODO: captionとnameを併用できない？
@@ -61,88 +61,88 @@ def test_code(app, status, warnings):
 
     # em
     expected = [
-        '//emlist[][c]{',
-        '//emlist[][c]{',
-        '//emlist[emcaption][c]{',
-        '//emlistnum[][ruby]{',
+        u'//emlist[][c]{',
+        u'//emlist[][c]{',
+        u'//emlist[emcaption][c]{',
+        u'//emlistnum[][ruby]{',
         ]
     for e in expected:
         assert e in re
 
     # firstlinenum
-    expected = ('//firstlinenum[100]')
+    expected = (u'//firstlinenum[100]')
     assert expected in re
 
     # codeinline
-    expected = ('@<code>{p = obj.ref_cnt}')
+    expected = (u'@<code>{p = obj.ref_cnt}')
     assert expected in re
 
     # cmd
-    expected = ('//cmd{\n$ cd /\n$ sudo rm -rf /\n//}')
+    expected = (u'//cmd{\n$ cd /\n$ sudo rm -rf /\n//}')
     assert expected in re
 
 
-@with_app(buildername='review', srcdir='tests/root', copy_srcdir_to_tmpdir=True)
-def test_admonition(app, status, warnings):
+@pytest.mark.sphinx('review')
+def test_admonition(app, status, warning):
     app.build()
 
-    re = (app.outdir / 'admonition.re').read_text()
+    re = (app.outdir / 'admonition.re').text()
 
     expected = [
-        '//tip[tipキャプション]{',
-        '//note[noteキャプション]{',
-        '//caution[dangerキャプション]{',
-        '//info[hintキャプション]{',
-        '//warning[warningキャプション]{',
-        '//warning{',
-        '//quote{\n百聞は一見にしかず\n//}',
+        u'//tip[tipキャプション]{',
+        u'//note[noteキャプション]{',
+        u'//caution[dangerキャプション]{',
+        u'//info[hintキャプション]{',
+        u'//warning[warningキャプション]{',
+        u'//warning{',
+        u'//quote{\n百聞は一見にしかず\n//}',
     ]
 
     for e in expected:
         assert e in re
 
 
-@with_app(buildername='review', srcdir='tests/root', copy_srcdir_to_tmpdir=True)
-def test_list(app, status, warnings):
+@pytest.mark.sphinx('review')
+def test_list(app, status, warning):
     app.build()
 
-    re = (app.outdir / 'list.re').read_text()
+    re = (app.outdir / 'list.re').text()
 
     expected = [
-        ' * 第3の項目 \n\nLorem ipsum dolor sit amet,\n',
-        ' 3. 第3の条件 \n\nLorem ipsum dolor sit amet,\n',
+        u' * 第3の項目 \n\nLorem ipsum dolor sit amet,\n',
+        u' 3. 第3の条件 \n\nLorem ipsum dolor sit amet,\n',
     ]
 
     for e in expected:
         assert e in re
 
 
-@with_app(buildername='review', srcdir='tests/root', copy_srcdir_to_tmpdir=True)
-def test_table(app, status, warnings):
+@pytest.mark.sphinx('review')
+def test_table(app, status, warning):
     app.build()
 
-    re = (app.outdir / 'table.re').read_text()
+    re = (app.outdir / 'table.re').text()
 
     expected = [
-        '//table[compact-label][]{\nA\tnot A\n------------\nFalse\tTrue\nTrue\tFalse\n//}',
-        '//table[tablename][Frozen Delights!]{\nTreat\tQuantity\tDescription',
-        ('//table[multiple-paragraph][]{\nA\tnot A\n------------\nLorem ipsum@<br>{}@<br>{}dolor sit amet,\t'
-         'consectetur adipiscing elit,\n//}'),
+        u'//table[compact-label][]{\nA\tnot A\n------------\nFalse\tTrue\nTrue\tFalse\n//}',
+        u'//table[tablename][Frozen Delights!]{\nTreat\tQuantity\tDescription',
+        (u'//table[multiple-paragraph][]{\nA\tnot A\n------------\nLorem ipsum@<br>{}@<br>{}dolor sit amet,\t'
+         u'consectetur adipiscing elit,\n//}'),
     ]
 
     for e in expected:
         assert e in re
 
 
-@with_app(buildername='review', srcdir='tests/root', copy_srcdir_to_tmpdir=True)
-def test_figure(app, status, warnings):
+@pytest.mark.sphinx('review')
+def test_figure(app, status, warning):
     app.build()
 
-    re = (app.outdir / 'figure.re').read_text()
+    re = (app.outdir / 'figure.re').text()
 
     expected = [
-        '//image[picture][ここはfigureのキャプションです。]{',
-        '//image[picture][]{',
+        u'//image[picture][ここはfigureのキャプションです。]{',
+        u'//image[picture][]{',
     ]
 
     for e in expected:
