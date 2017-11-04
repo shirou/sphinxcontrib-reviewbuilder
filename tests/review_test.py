@@ -6,7 +6,7 @@ import pytest
 
 @pytest.mark.sphinx('review')
 def test_basic(app, status, warning):
-    app.build()
+    app.builder.build_all()
 
 #    import pdb; pdb.set_trace()
 
@@ -43,7 +43,7 @@ def test_basic(app, status, warning):
 
 @pytest.mark.sphinx('review')
 def test_code(app, status, warning):
-    app.build()
+    app.builder.build_all()
 
     re = (app.outdir / 'code.re').text()
 
@@ -84,7 +84,7 @@ def test_code(app, status, warning):
 
 @pytest.mark.sphinx('review')
 def test_admonition(app, status, warning):
-    app.build()
+    app.builder.build_all()
 
     re = (app.outdir / 'admonition.re').text()
 
@@ -104,7 +104,7 @@ def test_admonition(app, status, warning):
 
 @pytest.mark.sphinx('review')
 def test_list(app, status, warning):
-    app.build()
+    app.builder.build_all()
 
     re = (app.outdir / 'list.re').text()
 
@@ -119,7 +119,7 @@ def test_list(app, status, warning):
 
 @pytest.mark.sphinx('review')
 def test_table(app, status, warning):
-    app.build()
+    app.builder.build_all()
 
     re = (app.outdir / 'table.re').text()
 
@@ -136,7 +136,7 @@ def test_table(app, status, warning):
 
 @pytest.mark.sphinx('review')
 def test_figure(app, status, warning):
-    app.build()
+    app.builder.build_all()
 
     re = (app.outdir / 'figure.re').text()
 
