@@ -324,8 +324,17 @@ class ReVIEWTranslator(TextTranslator):
 
     def visit_footnote(self, node):
         label = node['ids'][0]
-        self.add_text('//footnote[%s][%s]%s' % (label, node.children[1].astext(), self.nl))
-        raise nodes.SkipNode
+        self.add_text('//footnote[%s][' % label)
+        self.new_state(0)
+
+    def depart_footnote(self, node):
+        # convert all text inside footnote to single line
+        self.end_state(wrap=False, end=None)
+        footnote_text = self.states[-1].pop()[1]
+        for line in footnote_text:
+            self.add_text(line)
+
+        self.add_text(']%s' % self.nl)
 
     def visit_row(self, node):
         self.add_text(u'\t'.join([c.astext() for c in node.children]))
