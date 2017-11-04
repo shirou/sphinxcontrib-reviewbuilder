@@ -36,5 +36,19 @@ Lorem ipsum dolor sit amet,
 
     第2の項目のさらなる説明
 
+第3の項目
+    第3の項目の説明
+
+    .. code-block:: bash
+
+       print('hello world')
+
+       print('hello world')
+
+    第3の項目のさらなる説明
+
+第4の項目
+    第4の項目の説明
+
 Lorem ipsum dolor sit amet,
 
