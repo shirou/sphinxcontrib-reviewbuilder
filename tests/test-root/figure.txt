@@ -23,3 +23,8 @@ image
 --------
 
 .. image:: picture.png
+
+reference
+---------
+
+* numref: :numref:`figure-label`

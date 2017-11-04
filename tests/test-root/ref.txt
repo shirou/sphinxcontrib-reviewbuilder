@@ -8,3 +8,7 @@
 テーブル :ref:`テーブル <compact-label>` です
 
 numfig :numref:`figure-label` です
+
+numfig :numref:`compact-label` です
+
+numfig :numref:`なにもなしname` です

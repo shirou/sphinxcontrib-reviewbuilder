@@ -9,7 +9,10 @@
 
 from __future__ import absolute_import
 
+import os
+
 from docutils import nodes
+from sphinx import addnodes
 from sphinx.transforms import SphinxTransform
 from sphinx.util import logging
 
@@ -51,5 +54,53 @@ class DefinitionListTransform(SphinxTransform):
                         deflist.parent.insert(pos + 1, node)
 
 
+class NumberReferenceConverter(SphinxTransform):
+    """Convert number references to Re:VIEW's reference notations."""
+    default_priority = 5  # before ReferencesResolver
+
+    def apply(self):
+        for node in self.document.traverse(addnodes.pending_xref):
+            if node['refdomain'] == 'std' and node['reftype'] == 'numref':
+                docname, target_node = self.lookup(node)
+                if target_node is None:
+                    logger.warning('Invalid number_reference: %s', node, location=node)
+                    node.replace_self(node[0])
+                    continue
+
+                if docname == self.env.docname:
+                    prefix = ''
+                else:
+                    prefix = os.path.basename(docname) + '|'
+
+                if isinstance(target_node, nodes.table):
+                    text = '@<table>{%s%s}' % (prefix, target_node['ids'][0])
+                elif isinstance(target_node, nodes.figure):
+                    filename = os.path.basename(os.path.splitext(target_node[0]['uri'])[0])
+                    text = '@<img>{%s%s}' % (prefix, filename)
+                elif isinstance(target_node, nodes.literal_block):
+                    text = '@<list>{%s%s}' % (prefix, ''.join(target_node['names']))
+                else:
+                    logger.warning('Unsupported number_reference: %s', node,
+                                   location=node)
+                    continue
+
+                ref = nodes.Text(text, text)
+                node.replace_self(ref)
+
+    def lookup(self, node):
+        std = self.env.get_domain('std')
+        if node['reftarget'] in std.data['labels']:
+            docname, labelid, _ = std.data['labels'].get(node['reftarget'], ('', '', ''))
+        else:
+            docname, labelid = std.data['anonlabels'].get(node['reftarget'], ('', ''))
+
+        if not docname:
+            return None, None
+
+        target_node = self.env.get_doctree(docname).ids.get(labelid)
+        return docname, target_node
+
+
 def setup(app):
     app.add_post_transform(DefinitionListTransform)
+    app.add_post_transform(NumberReferenceConverter)

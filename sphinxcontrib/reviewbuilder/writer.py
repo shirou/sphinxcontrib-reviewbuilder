@@ -475,12 +475,3 @@ class ReVIEWTranslator(TextTranslator):
 #        node.parent.children.pop(i + 1)
 
         raise nodes.SkipNode
-
-    def visit_number_reference(self, node):
-        text = nodes.Text(node.get('title', ''))
-        if 'Fig' in text:
-            refuri = node.get('refuri', '')
-            self.add_text('@<img>{%s}' % refuri.replace('#', ''))
-            node.children.pop(0)
-
-        raise nodes.SkipNode

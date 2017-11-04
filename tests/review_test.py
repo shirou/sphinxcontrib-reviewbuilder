@@ -81,6 +81,10 @@ def test_code(app, status, warning):
     expected = (u'//cmd{\n$ cd /\n$ sudo rm -rf /\n//}')
     assert expected in re
 
+    # reference
+    expected = (u' * numref:@<list>{なにもなしname}\n')
+    assert expected in re
+
 
 @pytest.mark.sphinx('review')
 def test_admonition(app, status, warning):
@@ -137,6 +141,10 @@ def test_table(app, status, warning):
     for e in expected:
         assert e in re
 
+    # reference
+    expected = (u' * numref:@<table>{compact-label}\n')
+    assert expected in re
+
 
 @pytest.mark.sphinx('review')
 def test_figure(app, status, warning):
@@ -147,6 +155,26 @@ def test_figure(app, status, warning):
     expected = [
         u'//image[picture][ここはfigureのキャプションです。]{',
         u'//image[picture][]{',
+    ]
+
+    for e in expected:
+        assert e in re
+
+    # reference
+    expected = (u' * numref:@<img>{picture}\n')
+    assert expected in re
+
+
+@pytest.mark.sphinx('review')
+def test_reference(app, status, warning):
+    app.builder.build_all()
+
+    re = (app.outdir / 'ref.re').text()
+
+    expected = [
+        u'numfig@<img>{figure|picture}です',
+        u'numfig@<table>{table|compact-label}です',
+        u'numfig@<list>{code|なにもなしname}です',
     ]
 
     for e in expected:
