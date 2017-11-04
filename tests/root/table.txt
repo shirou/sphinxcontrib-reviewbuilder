@@ -36,9 +36,28 @@ table having empty cell
 
 .. _empty-cell:
 
-=====  =====
-  A    not A
-=====  =====
-False
-True   False
-=====  =====
+.. list-table::
+   :header-rows: 1
+
+   * -
+     - not A
+   * - False
+     -
+   * -
+     -
+
+
+a cell having multiple paragraph
+--------------------------------
+
+.. _multiple-paragraph:
+
+.. list-table::
+   :header-rows: 1
+
+   * - A
+     - not A
+   * - Lorem ipsum
+
+       dolor sit amet,
+     - consectetur adipiscing elit,
