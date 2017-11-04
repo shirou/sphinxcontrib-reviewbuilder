@@ -11,6 +11,7 @@ from __future__ import absolute_import
 
 from docutils import nodes
 
+from sphinxcontrib.reviewbuilder import transforms
 from sphinxcontrib.reviewbuilder.reviewbuilder import ReVIEWBuilder
 
 
@@ -28,3 +29,4 @@ def trunc_whitespace(app, doctree, docname):
 def setup(app):
     app.add_builder(ReVIEWBuilder)
     app.connect("doctree-resolved", trunc_whitespace)
+    transforms.setup(app)

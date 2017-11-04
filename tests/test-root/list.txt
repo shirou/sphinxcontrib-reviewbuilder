@@ -24,3 +24,31 @@ Lorem ipsum dolor sit amet,
 3. 第3の条件
 
 Lorem ipsum dolor sit amet,
+
+説明リスト
+----------
+
+第1の項目
+    第1の項目の説明
+
+第2の項目
+    第2の項目の説明
+
+    第2の項目のさらなる説明
+
+第3の項目
+    第3の項目の説明
+
+    .. code-block:: bash
+
+       print('hello world')
+
+       print('hello world')
+
+    第3の項目のさらなる説明
+
+第4の項目
+    第4の項目の説明
+
+Lorem ipsum dolor sit amet,
+

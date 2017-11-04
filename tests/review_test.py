@@ -111,6 +111,10 @@ def test_list(app, status, warning):
     expected = [
         u' * 第3の項目\n\nLorem ipsum dolor sit amet,\n',
         u' 3. 第3の条件\n\nLorem ipsum dolor sit amet,\n',
+        u' : 第1の項目\n   第1の項目の説明\n\n',
+        u' : 第2の項目\n   第2の項目の説明@<br>{}\n   第2の項目のさらなる説明\n\n',
+        u' : 第3の項目\n   第3の項目の説明@<br>{}\n   第3の項目のさらなる説明\n\n//cmd',
+        u'//}\n\n : 第4の項目\n'
     ]
 
     for e in expected:
