@@ -114,7 +114,9 @@ def test_list(app, status, warning):
         u' : 第1の項目\n   第1の項目の説明\n\n',
         u' : 第2の項目\n   第2の項目の説明@<br>{}\n   第2の項目のさらなる説明\n\n',
         u' : 第3の項目\n   第3の項目の説明@<br>{}\n   第3の項目のさらなる説明\n\n//cmd',
-        u'//}\n\n : 第4の項目\n'
+        u'//}\n\n : 第4の項目\n',
+        u' : 第5の項目\n   @<icon>{picture}\n\n',
+        u' : 第6の項目\n   第6の項目の説明@<br>{}\n   @<icon>{picture}\n\n',
     ]
 
     for e in expected:
