@@ -204,6 +204,16 @@ class ReVIEWTranslator(TextTranslator):
         if not self._classifier_count_in_li:
             self.end_state(first=" : ", end='')
 
+    def depart_bullet_list(self, node):
+        TextTranslator.depart_bullet_list(self, node)
+        if len(self.list_counter) == 0:
+            self.add_text('')
+
+    def depart_enumerated_list(self, node):
+        TextTranslator.depart_enumerated_list(self, node)
+        if len(self.list_counter) == 0:
+            self.add_text('')
+
     def depart_list_item(self, node):
         if self.list_counter[-1] == -1:
             self.end_state(first=' {} '.format('*' * len(self.list_counter)), end='')

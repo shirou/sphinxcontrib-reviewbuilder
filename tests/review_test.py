@@ -103,6 +103,21 @@ def test_admonition(app, status, warnings):
 
 
 @with_app(buildername='review', srcdir='tests/root', copy_srcdir_to_tmpdir=True)
+def test_list(app, status, warnings):
+    app.build()
+
+    re = (app.outdir / 'list.re').read_text()
+
+    expected = [
+        ' * 第3の項目 \n\nLorem ipsum dolor sit amet,\n',
+        ' 3. 第3の条件 \n\nLorem ipsum dolor sit amet,\n',
+    ]
+
+    for e in expected:
+        assert e in re
+
+
+@with_app(buildername='review', srcdir='tests/root', copy_srcdir_to_tmpdir=True)
 def test_table(app, status, warnings):
     app.build()
 
