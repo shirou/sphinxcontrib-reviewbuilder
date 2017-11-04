@@ -1,6 +1,7 @@
 tests/__pycache__
 tests/root/_build
 *.pyc
+*.swp
 .cache
 .tox
 sphinxcontrib_reviewbuilder.egg-info/
