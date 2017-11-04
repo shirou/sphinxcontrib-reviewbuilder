@@ -204,6 +204,18 @@ class ReVIEWTranslator(TextTranslator):
         if not self._classifier_count_in_li:
             self.end_state(first=" : ", end='')
 
+    def depart_definition(self, node):
+        pos = len(self.states[-2])
+        TextTranslator.depart_definition(self, node)
+
+        # replace a blank line by ``@<br>{}``
+        while pos < len(self.states[-1]) - 1:
+            item = self.states[-1][pos]
+            if item[1] and item[1][-1] == '':
+                item[1].pop()
+                item[1][-1] += '@<br>{}'
+            pos += 1
+
     def depart_bullet_list(self, node):
         TextTranslator.depart_bullet_list(self, node)
         if len(self.list_counter) == 0:
