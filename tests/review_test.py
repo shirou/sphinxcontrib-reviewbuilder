@@ -13,12 +13,12 @@ def test_basic(app, status, warning):
     re = (app.outdir / 'basic.re').text()
 
     expected = [
-        u'= section 1',
-        u'== section 2',
-        u'=== section 3',
-        u'=== section 4.0',
-        u'==== section 5',
-        u'=== section 4.1',
+        u'={section-1} section 1',
+        u'=={section-2} section 2',
+        u'==={section-3} section 3',
+        u'==={section-4-0} section 4.0',
+        u'===={section-5} section 5',
+        u'==={section-4-1} section 4.1',
     ]
     for e in expected:
         assert e in re
@@ -36,7 +36,9 @@ def test_basic(app, status, warning):
         u'//raw[|html|<hr width=50 size=10>]',
         u'@<u>{下線}を引きます',
         u'索引@<hidx>{インデックス}インデックスを作ります',  # TODO: インデックス文字が入っている
+        u'numref:@<chap>{section-1},@<chap>{section-2},@<chap>{section-3}',
     ]
+    print(re)
     for e in expected:
         assert e in re
 
@@ -175,6 +177,8 @@ def test_reference(app, status, warning):
         u'numfig@<img>{figure|picture}です',
         u'numfig@<table>{table|compact-label}です',
         u'numfig@<list>{code|なにもなしname}です',
+        u'numfig@<chap>{basic|section-1}です',
+        u'numfig@<chap>{basic|section-2}です',
     ]
 
     for e in expected:

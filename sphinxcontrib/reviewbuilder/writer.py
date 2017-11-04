@@ -136,7 +136,11 @@ class ReVIEWTranslator(TextTranslator):
         self.stateindent.pop()
         text = text_type(text)
 
-        title = ['', u'{} {}'.format(self.sectionchar * self.sectionlevel, text)]
+        marker = self.sectionchar * self.sectionlevel
+        if node.parent['ids']:
+            title = ['', u'%s{%s} %s' % (marker, node.parent['ids'][0], text)]
+        else:
+            title = ['', u'%s %s' % (marker, text)]
         if len(self.states) == 2 and len(self.states[-1]) == 0:
             # remove an empty line before title if it is first section title in the document
             title.pop(0)

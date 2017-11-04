@@ -12,3 +12,7 @@ numfig :numref:`figure-label` です
 numfig :numref:`compact-label` です
 
 numfig :numref:`なにもなしname` です
+
+numfig :numref:`section1` です
+
+numfig :numref:`section2` です
