@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 class DefinitionListTransform(SphinxTransform):
-    """Decorate terms of glossaries as bold."""
+    """Transform definition list to fit Re:VIEW format."""
     default_priority = 100
 
     def apply(self):
