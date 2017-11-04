@@ -336,10 +336,6 @@ class ReVIEWTranslator(TextTranslator):
 
         self.add_text(']%s' % self.nl)
 
-    def visit_row(self, node):
-        self.add_text(u'\t'.join([c.astext() for c in node.children]))
-        self.table.append([])
-
     def visit_table(self, node):
         if self.table:
             raise NotImplementedError('Nested tables are not supported.')
@@ -358,12 +354,21 @@ class ReVIEWTranslator(TextTranslator):
     def visit_entry(self, node):
         if len(node) == 0:
             # Fill single-dot ``.`` for empty table cells
-            self.add_text('.')
+            self.table[-1].append('.')
             raise nodes.SkipNode
         else:
             TextTranslator.visit_entry(self, node)
 
+    def depart_entry(self, node):
+        TextTranslator.depart_entry(self, node)
+
+        # replace return codes by @<br>{}
+        text = self.table[-1].pop().strip()
+        text = text.replace('\n', '@<br>{}')
+        self.table[-1].append(text)
+
     def depart_row(self, node):
+        self.add_text(u'\t'.join(self.table.pop()))
         self.add_text(self.nl)
 
     def depart_thead(self, node):
