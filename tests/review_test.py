@@ -30,7 +30,7 @@ def test_basic(app, status, warnings):
         '@<href>{https://github.com/kmuto/review/blob/master/doc/format.rdoc,フォーマット}',
         '@<href>{https://github.com/kmuto/review/blob/master/doc/format.rdoc}',
         'ここは@<fn>{f1}脚注@<fn>{f2}',
-        '//footnote[f1][脚注1]',
+        '//footnote[f2][脚注2は@<i>{インライン}@<b>{要素}を@<href>{https://github.com/kmuto/review,含みます}]',
         '#@# コメントです',
         '#@# コメントブロック1\n#@# コメントブロック2',
         '//raw[|html|<hr width=50 size=10>]',
