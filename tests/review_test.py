@@ -151,3 +151,14 @@ def test_figure(app, status, warning):
 
     for e in expected:
         assert e in re
+
+
+@pytest.mark.sphinx('review', testroot='deep-dirs')
+def test_deep_dirs(app, status, warning):
+    app.builder.build_all()
+    assert (app.outdir / 'appendix.re').exists()
+    assert (app.outdir / 'index.re').exists()
+    assert (app.outdir / 'chap1.re').exists()
+    assert (app.outdir / 'chap2.re').exists()
+    assert (app.outdir / 'images/chap1/picture.png').exists()
+    assert (app.outdir / 'images/chap2/picture.png').exists()

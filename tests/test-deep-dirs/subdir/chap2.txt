@@ -1,0 +1,4 @@
+chap2
+=====
+
+.. image:: /picture.png
