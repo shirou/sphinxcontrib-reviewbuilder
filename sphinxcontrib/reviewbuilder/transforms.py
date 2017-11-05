@@ -97,7 +97,10 @@ class NumberReferenceConverter(SphinxTransform):
                 elif isinstance(target_node, nodes.literal_block):
                     text = '@<list>{%s%s}' % (prefix, ''.join(target_node['names']))
                 elif isinstance(target_node, nodes.section):
-                    text = '@<chap>{%s%s}' % (prefix, target_node['ids'][0])
+                    if isinstance(target_node.parent, nodes.document):
+                        text = '@<chap>{%s}' % (docname)
+                    else:
+                        text = '@<hd>{%s%s}' % (prefix, target_node['ids'][0])
                 else:
                     logger.warning('Unsupported number_reference: %s', node,
                                    location=node)
