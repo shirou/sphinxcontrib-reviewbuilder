@@ -261,8 +261,6 @@ class ReVIEWTranslator(TextTranslator):
 
     def visit_literal_block(self, node):
         # TODO: remove highlight args
-        self.new_state(0)
-
         lang = node.get('language', 'guess')
 
         if lang == "bash":  # use cmd
@@ -282,17 +280,17 @@ class ReVIEWTranslator(TextTranslator):
         if 'linenos' in node and node['linenos']:
             if 'highlight_args' in node and 'linenostart' in node['highlight_args']:
                 n = node['highlight_args']['linenostart']
-                self.add_text('//firstlinenum[%s]%s' % (n, self.nl))
+                self.add_lines(['//firstlinenum[%s]' % n])
                 # TODO: remove highlight args line
             t += "num"
 
         if names:
-            self.add_text('//%s[%s][%s][%s]{%s' % (t, names, caption, lang, self.nl))
+            self.new_review_block('//%s[%s][%s][%s]{' % (t, names, caption, lang))
         else:
-            self.add_text('//%s[%s][%s]{%s' % (t, caption, lang, self.nl))
+            self.new_review_block('//%s[%s][%s]{' % (t, caption, lang))
 
     def depart_literal_block(self, node):
-        self.end_state(end=['//}' + self.nl], wrap=False)
+        self.end_review_block(wrap=False)
 
     def visit_caption(self, node):
         raise nodes.SkipNode
