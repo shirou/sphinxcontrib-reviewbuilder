@@ -383,7 +383,7 @@ class ReVIEWTranslator(TextTranslator):
             title = node.children[0].astext()
             node.children.pop(0)
 
-        self.add_text(u'//table[%s][%s]{%s' % (label, title, self.nl))
+        self.new_review_block(u'//table[%s][%s]{' % (label, title))
 
     def visit_entry(self, node):
         if len(node) == 0:
@@ -401,16 +401,18 @@ class ReVIEWTranslator(TextTranslator):
         text = text.replace('\n', '@<br>{}')
         self.table[-1].append(text)
 
+    def visit_row(self, node):
+        self.table.append([])
+
     def depart_row(self, node):
-        self.add_text(u'\t'.join(self.table.pop()))
-        self.add_text(self.nl)
+        self.add_lines([u'\t'.join(self.table.pop())])
 
     def depart_thead(self, node):
-        self.add_text('------------' + self.nl)
+        self.add_lines(['------------'])
 
     def depart_table(self, node):
         self.table = None
-        self.add_text("//}" + self.nl)
+        self.end_review_block()
 
     def visit_figure(self, node):
         self.new_state(0)
