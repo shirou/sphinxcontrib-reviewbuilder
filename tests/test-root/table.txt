@@ -61,3 +61,8 @@ a cell having multiple paragraph
 
        dolor sit amet,
      - consectetur adipiscing elit,
+
+reference
+---------
+
+* numref: :numref:`compact-label`

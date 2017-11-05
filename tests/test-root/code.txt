@@ -110,3 +110,8 @@ cmd
 
    $ cd /
    $ sudo rm -rf /
+
+reference
+---------
+
+* numref: :numref:`なにもなしname`
