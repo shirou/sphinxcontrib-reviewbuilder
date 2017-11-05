@@ -303,7 +303,7 @@ class ReVIEWTranslator(TextTranslator):
 
     def _make_visit_admonition(name):
         def visit_admonition(self, node):
-            self.states[-1].append((0, [u'//%s{' % self.admonitionlabels[name]]))
+            self.new_review_block('//%s{' % self.admonitionlabels[name])
 
         return visit_admonition
 
@@ -312,7 +312,8 @@ class ReVIEWTranslator(TextTranslator):
         content = self.states[-1][-1][1]
         while content and content[-1] == '':
             content.pop()
-        self.states[-1].append((0, [u'//}']))
+
+        self.end_review_block()
 
     visit_attention = _make_visit_admonition('attention')
     depart_attention = _depart_named_admonition
