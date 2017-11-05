@@ -431,15 +431,17 @@ class ReVIEWTranslator(TextTranslator):
 
         if node.get('inline'):
             self.add_text('@<icon>{%s}' % filename)
-            raise nodes.SkipNode
-        elif caption:
-            self.add_text('//image[%s][%s]{%s' % (filename, caption, self.nl))
         else:
-            self.add_text('//image[%s][]{%s' % (filename, self.nl))
-        if legend:
-            self.add_text(legend)
+            if caption:
+                self.new_review_block('//image[%s][%s]{' % (filename, caption))
+            else:
+                self.new_review_block('//image[%s][]{' % filename)
 
-        self.add_text(self.nl + "//}" + self.nl)
+            if legend:
+                self.add_lines([legend])
+
+            self.end_review_block("//}")
+
         raise nodes.SkipNode
 
     def visit_legend(self, node):
