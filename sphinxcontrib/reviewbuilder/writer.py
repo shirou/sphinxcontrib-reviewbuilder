@@ -3,10 +3,10 @@
 
 import os
 
-from six import text_type
 from docutils import nodes, writers
 
 from sphinx import version_info as SPHINX_VERSION
+from sphinx.util import logging
 from sphinx.writers.text import TextTranslator
 
 
@@ -14,6 +14,9 @@ if False:
     # For type annotation
     from typing import Any, Callable, Tuple, Union  # NOQA
     from sphinx.builders.text import TextBuilder  # NOQA
+
+
+logger = logging.getLogger(__name__)
 
 
 class Table(object):
@@ -98,25 +101,33 @@ class ReVIEWTranslator(TextTranslator):
     def depart_paragraph(self, node):
         self.end_state()
 
+    def visit_title(self, node):
+        if isinstance(node.parent, nodes.Admonition):
+            self.add_text(node.astext() + ': ')
+            raise nodes.SkipNode
+        elif isinstance(node.parent, nodes.table):
+            raise nodes.SkipNode
+        else:
+            self.new_state(0)
+
     def depart_title(self, node):
-        if self.table:
-            return
+        if isinstance(node.parent, nodes.section):
+            self.end_state()
 
-        text = text_type(''.join(x[1] for x in self.states.pop() if x[0] == -1))
-        self.stateindent.pop()
-        text = text_type(text)
-
-        marker = self.sectionchar * self.sectionlevel
-        if node.parent['ids']:
-            title = u'%s{%s} %s' % (marker, node.parent['ids'][0], text)
+            marker = self.sectionchar * self.sectionlevel
+            text = ''.join(self.states[-1].pop()[1])
+            if node.parent['ids']:
+                title = u'%s{%s} %s' % (marker, node.parent['ids'][0], text)
+            else:
+                title = u'%s %s' % (marker, text)
+            if len(self.states) == 2 and len(self.states[-1]) == 0:
+                # at the top of the document; no blank lines are needed here.
+                self.add_lines([title, ''])
+            else:
+                # insert a blank line before title
+                self.add_lines(['', title, ''])
         else:
-            title = u'%s %s' % (marker, text)
-        if len(self.states) == 2 and len(self.states[-1]) == 0:
-            # at the top of the document; no blank lines are needed here.
-            self.add_lines([title, ''])
-        else:
-            # insert a blank line before title
-            self.add_lines(['', title, ''])
+            logger.warning('unsupperted title type: %s', node.parent)
 
     def visit_title_reference(self, node):
         """inline citation reference"""
@@ -340,7 +351,6 @@ class ReVIEWTranslator(TextTranslator):
         title = ""
         if isinstance(node.children[0], nodes.title):
             title = node.children[0].astext()
-            node.children.pop(0)
 
         self.new_review_block(u'//table[%s][%s]{' % (label, title))
 
