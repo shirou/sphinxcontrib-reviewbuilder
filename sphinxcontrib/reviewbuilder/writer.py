@@ -452,7 +452,7 @@ class ReVIEWTranslator(TextTranslator):
 
     def visit_comment(self, node):
         for c in node.astext().splitlines():
-            self.add_text('#@# %s%s' % (c, self.nl))
+            self.add_lines(['#@# %s' % c])
 
         raise nodes.SkipNode
 
