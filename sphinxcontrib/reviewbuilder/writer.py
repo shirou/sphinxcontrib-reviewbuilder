@@ -435,6 +435,9 @@ class ReVIEWTranslator(TextTranslator):
         self.end_state()
 
     def visit_comment(self, node):
+        if self.builder.config.review_keep_comments is False:
+            raise nodes.SkipNode
+
         for c in node.astext().splitlines():
             self.add_text('#@# %s%s' % (c, self.nl))
 

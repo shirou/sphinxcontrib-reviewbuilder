@@ -122,3 +122,4 @@ class ReVIEWBuilder(TextBuilder):
 def setup(app):
     app.add_builder(ReVIEWBuilder)
     app.add_config_value('review_catalog_file', '', 'review')
+    app.add_config_value('review_keep_comments', False, 'review')
