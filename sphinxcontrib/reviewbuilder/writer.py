@@ -128,6 +128,12 @@ class ReVIEWTranslator(TextTranslator):
         self._title_char = self.sectionchar * self.sectionlevel
         self.sectionlevel += 1
 
+    def visit_paragraph(self, node):
+        self.new_state(0)
+
+    def depart_paragraph(self, node):
+        self.end_state()
+
     def depart_title(self, node):
         if self.table:
             return
@@ -289,20 +295,16 @@ class ReVIEWTranslator(TextTranslator):
 
     def _make_visit_admonition(name):
         def visit_admonition(self, node):
-            caption = None
-            if len(node.children) > 1:
-                caption = node.children[0].astext()
-                node.children.pop(0)
-            if caption:
-                f = u'//%s[%s]{%s' % (self.admonitionlabels[name], caption, self.nl)
-            else:
-                f = u'//%s{%s' % (self.admonitionlabels[name], self.nl)
-            self.add_text(f)
+            self.states[-1].append((0, [u'//%s{' % self.admonitionlabels[name]]))
 
         return visit_admonition
 
     def _depart_named_admonition(self, node):
-        self.add_text(self.end)
+        # remove trailing space
+        content = self.states[-1][-1][1]
+        while content and content[-1] == '':
+            content.pop()
+        self.states[-1].append((0, [u'//}']))
 
     visit_attention = _make_visit_admonition('attention')
     depart_attention = _depart_named_admonition

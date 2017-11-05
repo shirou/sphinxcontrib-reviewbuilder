@@ -95,12 +95,12 @@ def test_admonition(app, status, warning):
     re = (app.outdir / 'admonition.re').text()
 
     expected = [
-        u'//tip[tipキャプション]{',
-        u'//note[noteキャプション]{',
-        u'//caution[dangerキャプション]{',
-        u'//info[hintキャプション]{',
-        u'//warning[warningキャプション]{',
-        u'//warning{',
+        u'//tip{\ntipキャプション\n\nTipsです\n//}\n',
+        u'//note{\nnoteキャプション\n\nノートです\n//}\n',
+        u'//caution{\ndangerキャプション\n\ndangerはcautionになります。\n//}\n',
+        u'//info{\nhintキャプション\n\nhintはinfoになります\n//}\n',
+        u'//warning{\nwarningキャプション\n\nwarningです。\n//}\n',
+        u'//warning{\nwarningです。キャプションなしです。\n//}\n',
         u'//quote{\n百聞は一見にしかず\n//}',
     ]
 
