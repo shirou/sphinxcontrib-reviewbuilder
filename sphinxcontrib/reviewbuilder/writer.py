@@ -72,24 +72,6 @@ class ReVIEWTranslator(TextTranslator):
         "hint": "info",
     }
 
-    def __init__(self, document, builder):
-        nodes.NodeVisitor.__init__(self, document)
-        self.builder = builder
-
-        newlines = builder.config.text_newlines
-        if newlines == 'windows':
-            self.nl = '\r\n'
-        elif newlines == 'native':
-            self.nl = os.linesep
-        else:
-            self.nl = '\n'
-        self.states = [[]]
-        self.stateindent = [0]
-        self.list_counter = []
-        self.sectionlevel = 0
-        self.lineblocklevel = 0
-        self.table = None
-
     def add_lines(self, lines):
         self.states[-1].append((0, lines))
 
