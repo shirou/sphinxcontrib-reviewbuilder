@@ -221,7 +221,7 @@ class ReVIEWTranslator(TextTranslator):
         lang = node.get('language', 'guess')
 
         if lang == "bash":  # use cmd
-            self.add_text('//cmd{' + self.nl)
+            self.new_review_block('//cmd{')
             return
 
         names = False  # get reference if exists
