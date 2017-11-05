@@ -429,8 +429,15 @@ class ReVIEWTranslator(TextTranslator):
         self.end_state()
 
     def visit_comment(self, node):
-        for c in node.astext().splitlines():
-            self.add_lines(['#@# %s' % c])
+        comments = ["#@# %s" % line.strip() for line in node.astext().splitlines()]
+
+        index = node.parent.index(node)
+        if len(node.parent) > index + 1 and isinstance(node.parent[index + 1], nodes.comment):
+            # inside consecutive comments (comment group)
+            self.add_lines(comments)
+        else:
+            # insert a blank line after the comment group
+            self.add_lines(comments + [''])
 
         raise nodes.SkipNode
 
