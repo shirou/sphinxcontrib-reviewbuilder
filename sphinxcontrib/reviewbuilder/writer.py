@@ -19,19 +19,6 @@ if False:
 logger = logging.getLogger(__name__)
 
 
-class Table(object):
-    def __init__(self):
-        self.col = 0
-        self.colcount = 0
-        self.colspec = None
-        self.rowcount = 0
-        self.had_head = False
-        self.has_problematic = False
-        self.has_verbatim = False
-        self.caption = None
-        self.longtable = False
-
-
 class ReVIEWWriter(writers.Writer):
     supported = ('review',)
     settings_spec = ('No options here.', '', ())
