@@ -92,6 +92,7 @@ class ReVIEWTranslator(TextTranslator):
         self.sectionlevel += 1
 
     def visit_paragraph(self, node):
+        # overrided: allowed for admonitions
         self.new_state(0)
 
     def depart_paragraph(self, node):
@@ -192,11 +193,15 @@ class ReVIEWTranslator(TextTranslator):
 
     def depart_bullet_list(self, node):
         TextTranslator.depart_bullet_list(self, node)
+
+        # insert a blank line after the list
         if len(self.list_counter) == 0:
             self.add_text('')
 
     def depart_enumerated_list(self, node):
         TextTranslator.depart_enumerated_list(self, node)
+
+        # insert a blank line after the list
         if len(self.list_counter) == 0:
             self.add_text('')
 
