@@ -50,5 +50,13 @@ Lorem ipsum dolor sit amet,
 第4の項目
     第4の項目の説明
 
+第5の項目
+    .. figure:: picture.png
+
+第6の項目
+    第6の項目の説明
+
+    .. figure:: picture.png
+
 Lorem ipsum dolor sit amet,
 

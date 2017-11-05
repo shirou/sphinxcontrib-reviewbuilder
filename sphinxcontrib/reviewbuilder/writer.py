@@ -128,6 +128,12 @@ class ReVIEWTranslator(TextTranslator):
         self._title_char = self.sectionchar * self.sectionlevel
         self.sectionlevel += 1
 
+    def visit_paragraph(self, node):
+        self.new_state(0)
+
+    def depart_paragraph(self, node):
+        self.end_state()
+
     def depart_title(self, node):
         if self.table:
             return
@@ -136,7 +142,11 @@ class ReVIEWTranslator(TextTranslator):
         self.stateindent.pop()
         text = text_type(text)
 
-        title = ['', u'{} {}'.format(self.sectionchar * self.sectionlevel, text)]
+        marker = self.sectionchar * self.sectionlevel
+        if node.parent['ids']:
+            title = ['', u'%s{%s} %s' % (marker, node.parent['ids'][0], text)]
+        else:
+            title = ['', u'%s %s' % (marker, text)]
         if len(self.states) == 2 and len(self.states[-1]) == 0:
             # remove an empty line before title if it is first section title in the document
             title.pop(0)
@@ -243,7 +253,7 @@ class ReVIEWTranslator(TextTranslator):
         # TODO: remove highlight args
         self.new_state(0)
 
-        lang = node.get('language', '')
+        lang = node.get('language', 'guess')
 
         if lang == "bash":  # use cmd
             self.add_text('//cmd{' + self.nl)
@@ -285,20 +295,16 @@ class ReVIEWTranslator(TextTranslator):
 
     def _make_visit_admonition(name):
         def visit_admonition(self, node):
-            caption = None
-            if len(node.children) > 1:
-                caption = node.children[0].astext()
-                node.children.pop(0)
-            if caption:
-                f = u'//%s[%s]{%s' % (self.admonitionlabels[name], caption, self.nl)
-            else:
-                f = u'//%s{%s' % (self.admonitionlabels[name], self.nl)
-            self.add_text(f)
+            self.states[-1].append((0, [u'//%s{' % self.admonitionlabels[name]]))
 
         return visit_admonition
 
     def _depart_named_admonition(self, node):
-        self.add_text(self.end)
+        # remove trailing space
+        content = self.states[-1][-1][1]
+        while content and content[-1] == '':
+            content.pop()
+        self.states[-1].append((0, [u'//}']))
 
     visit_attention = _make_visit_admonition('attention')
     depart_attention = _depart_named_admonition
@@ -409,7 +415,10 @@ class ReVIEWTranslator(TextTranslator):
                 legend = c.astext()
 
         filename = os.path.basename(os.path.splitext(node['uri'])[0])
-        if caption:
+        if node.get('inline'):
+            self.add_text('@<icon>{%s}' % filename)
+            raise nodes.SkipNode
+        elif caption:
             self.add_text('//image[%s][%s]{%s' % (filename, caption, self.nl))
         else:
             self.add_text('//image[%s][]{%s' % (filename, self.nl))
@@ -472,14 +481,5 @@ class ReVIEWTranslator(TextTranslator):
 #            i += 1
 #
 #        node.parent.children.pop(i + 1)
-
-        raise nodes.SkipNode
-
-    def visit_number_reference(self, node):
-        text = nodes.Text(node.get('title', ''))
-        if 'Fig' in text:
-            refuri = node.get('refuri', '')
-            self.add_text('@<img>{%s}' % refuri.replace('#', ''))
-            node.children.pop(0)
 
         raise nodes.SkipNode

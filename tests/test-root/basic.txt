@@ -1,3 +1,5 @@
+.. _section1:
+
 =========
 section 1
 =========
@@ -8,6 +10,7 @@ section 1
 
 次の段落〜〜〜
 
+.. _section2:
 
 section 2
 =========
@@ -16,6 +19,8 @@ section 2
 .. column: コンパイラコンパイラ
 
    コラムの内容
+
+.. _section3:
 
 section 3
 ---------
@@ -118,3 +123,10 @@ section 6.1
 索引 :index:`インデックス` を作ります
 
 ペア :index:`index entries <pair: index; entry>`. は連続して出ます。
+
+section
+
+section 6.2
+++++++++++++++
+
+numref: :numref:`section1`, :numref:`section2`, :numref:`section3`
