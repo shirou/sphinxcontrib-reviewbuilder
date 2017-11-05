@@ -12,20 +12,32 @@ from docutils import nodes
 from docutils.io import StringOutput
 from sphinx.builders.text import TextBuilder
 from sphinx.util.fileutil import copy_asset_file
-from sphinx.util.osutil import ensuredir, os_path
+from sphinx.util.osutil import ensuredir
 from sphinx.util.console import bold
+from sphinx.util.template import SphinxRenderer
 
 from sphinxcontrib.reviewbuilder.writer import ReVIEWWriter, ReVIEWTranslator
 
 TEMPLATE = """
 PREDEF:
+{%- for item in predef %}
+- {{ item }}
+{%- endfor %}
 
 CHAPS:
-%s
+{%- for item in chaps %}
+- {{ item }}
+{%- endfor %}
 
 APPENDIX:
+{%- for item in appendix %}
+- {{ item }}
+{%- endfor %}
 
 POSTDEF:
+{%- for item in postdef %}
+- {{ item }}
+{%- endfor %}
 """
 
 
@@ -45,15 +57,14 @@ class ReVIEWBuilder(TextBuilder):
         self.current_docname = docname
         destination = StringOutput(encoding='utf-8')
         self.writer.write(doctree, destination)
-        outfilename = path.join(self.outdir, os_path(docname) + self.out_suffix)
 
-        ensuredir(path.dirname(outfilename))
+        filename = path.basename(docname) + self.out_suffix
         try:
-            with codecs.open(outfilename, 'w', 'utf-8') as f:
+            with codecs.open(path.join(self.outdir, filename), 'w', 'utf-8') as f:
                 f.write(self.writer.output)
-            self.out_files.append(os_path(docname) + self.out_suffix)
+            self.out_files.append(filename)
         except (IOError, OSError) as err:
-            self.warn("error writing file %s: %s" % (outfilename, err))
+            self.warn("error writing file %s: %s" % (filename, err))
 
         self.post_process_images(docname, doctree)
 
@@ -83,20 +94,22 @@ class ReVIEWBuilder(TextBuilder):
             if candidate not in self.env.images:
                 # non-existing URI; let it alone
                 continue
-            self.images[candidate] = path.join(docname, self.env.images[candidate][1])
+            dest = path.join(path.basename(docname), self.env.images[candidate][1])
+            self.images[dest] = candidate
 
     def finish(self):
-        chaps = []
-        for f in self.out_files:
-            chaps.append('  - %s' % f)
-        catalogfile = path.join(self.outdir, "catalog.yml")
-        with codecs.open(catalogfile, 'w', 'utf-8') as f:
-            f.write(TEMPLATE % '\n'.join(chaps))
+        if self.config.review_catalog_file:
+            copy_asset_file(path.join(self.srcdir, self.config.review_catalog_file), self.outdir)
+        else:
+            catalogfile = path.join(self.outdir, "catalog.yml")
+            with codecs.open(catalogfile, 'w', 'utf-8') as f:
+                template = SphinxRenderer()
+                f.write(template.render_string(TEMPLATE, {'chaps': self.out_files}))
 
         # copy image files
         if self.images:
             self.info(bold('copying images...'), nonl=1)
-            for src, dest in iteritems(self.images):
+            for dest, src in iteritems(self.images):
                 self.info(' ' + src, nonl=1)
                 outdir = path.join(self.outdir, "images")
                 outfile = path.join(outdir, dest)
@@ -104,3 +117,8 @@ class ReVIEWBuilder(TextBuilder):
                 copy_asset_file(path.join(self.srcdir, src),
                                 outfile)
             self.info()
+
+
+def setup(app):
+    app.add_builder(ReVIEWBuilder)
+    app.add_config_value('review_catalog_file', '', 'review')
