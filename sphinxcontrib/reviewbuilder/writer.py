@@ -405,8 +405,6 @@ class ReVIEWTranslator(TextTranslator):
         self.new_state(0)
 
     def visit_image(self, node):
-        filename = os.path.splitext(node['uri'])[0]
-
         caption = None
         for c in node.parent.children:
             if isinstance(c, nodes.caption):
@@ -416,6 +414,7 @@ class ReVIEWTranslator(TextTranslator):
             if isinstance(c, nodes.legend):
                 legend = c.astext()
 
+        filename = os.path.basename(os.path.splitext(node['uri'])[0])
         if node.get('inline'):
             self.add_text('@<icon>{%s}' % filename)
             raise nodes.SkipNode
