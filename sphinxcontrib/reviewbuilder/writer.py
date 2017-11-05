@@ -457,10 +457,8 @@ class ReVIEWTranslator(TextTranslator):
         raise nodes.SkipNode
 
     def visit_raw(self, node):
-        form = node.get('format', '')
-        self.new_state(0)
-        self.add_text('//raw[|%s|%s]' % (form, node.astext()))
-        self.end_state(wrap=False)
+        content = node.astext().replace('\n', '\\n')
+        self.add_lines(['//raw[|%s|%s]' % (node.get('format'), content)])
         raise nodes.SkipNode
 
     def visit_subscript(self, node):
