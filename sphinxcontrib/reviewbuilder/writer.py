@@ -416,7 +416,10 @@ class ReVIEWTranslator(TextTranslator):
             if isinstance(c, nodes.legend):
                 legend = c.astext()
 
-        if caption:
+        if node.get('inline'):
+            self.add_text('@<icon>{%s}' % filename)
+            raise nodes.SkipNode
+        elif caption:
             self.add_text('//image[%s][%s]{%s' % (filename, caption, self.nl))
         else:
             self.add_text('//image[%s][]{%s' % (filename, self.nl))
