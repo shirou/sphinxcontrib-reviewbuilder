@@ -155,7 +155,7 @@ class ReVIEWTranslator(TextTranslator):
 
     def visit_title_reference(self, node):
         """inline citation reference"""
-        self.add_text('@<code>{')
+        self.visit_literal(node)
 
     def depart_title_reference(self, node):
         self.add_text('}')
@@ -289,9 +289,9 @@ class ReVIEWTranslator(TextTranslator):
 
     def visit_literal(self, node):
         self.add_text('@<code>{')
-
-    def depart_literal(self, node):
+        self.add_text(node.astext().replace('\\', '\\\\'))
         self.add_text('}')
+        raise nodes.SkipNode
 
     def _make_visit_admonition(name):
         def visit_admonition(self, node):
