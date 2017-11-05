@@ -83,13 +83,23 @@ class ReVIEWTranslator(TextTranslator):
             self.nl = os.linesep
         else:
             self.nl = '\n'
-        self.end = "%s//}%s" % (self.nl, self.nl)
         self.states = [[]]
         self.stateindent = [0]
         self.list_counter = []
         self.sectionlevel = 0
         self.lineblocklevel = 0
         self.table = None
+
+    def add_lines(self, lines):
+        self.states[-1].append((0, lines))
+
+    def new_review_block(self, text, indent=0):
+        self.add_lines([text])
+        self.new_state(indent)
+
+    def end_review_block(self, end=[], wrap=True):
+        self.end_state(end=end, wrap=wrap)
+        self.add_lines(['//}', ''])
 
     def end_state(self, wrap=True, end=[''], first=None):
         content = self.states.pop()
@@ -326,7 +336,9 @@ class ReVIEWTranslator(TextTranslator):
     depart_warning = _depart_named_admonition
 
     def visit_block_quote(self, node):
-        self.add_text('//quote{\n%s%s' % (node.astext(), self.end))
+        self.new_review_block('//quote{')
+        self.add_text(node.astext())
+        self.end_review_block()
         raise nodes.SkipNode
 
     def visit_math(self, node):
@@ -336,10 +348,10 @@ class ReVIEWTranslator(TextTranslator):
         self.add_text("}")
 
     def visit_math_block(self, node):
-        self.add_text('//texequation{' + self.nl)
+        self.new_review_block('//texequation')
 
     def depart_math_block(self, node):
-        self.add_text(self.end)
+        self.end_review_block()
 
     def visit_footnote_reference(self, node):
         self.add_text('@<fn>{%s}' % node['refid'])
