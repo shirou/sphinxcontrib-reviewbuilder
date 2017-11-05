@@ -154,14 +154,15 @@ class ReVIEWTranslator(TextTranslator):
 
         marker = self.sectionchar * self.sectionlevel
         if node.parent['ids']:
-            title = ['', u'%s{%s} %s' % (marker, node.parent['ids'][0], text)]
+            title = u'%s{%s} %s' % (marker, node.parent['ids'][0], text)
         else:
-            title = ['', u'%s %s' % (marker, text)]
+            title = u'%s %s' % (marker, text)
         if len(self.states) == 2 and len(self.states[-1]) == 0:
-            # remove an empty line before title if it is first section title in the document
-            title.pop(0)
-        self.states[-1].append((0, title))
-        self.add_text(self.nl)
+            # at the top of the document; no blank lines are needed here.
+            self.add_lines([title, ''])
+        else:
+            # insert a blank line before title
+            self.add_lines(['', title, ''])
 
     def visit_title_reference(self, node):
         """inline citation reference"""
