@@ -13,12 +13,12 @@ def test_basic(app, status, warning):
     re = (app.outdir / 'basic.re').text()
 
     expected = [
-        u'= section 1',
-        u'== section 2',
-        u'=== section 3',
-        u'=== section 4.0',
-        u'==== section 5',
-        u'=== section 4.1',
+        u'={section-1} section 1',
+        u'=={section-2} section 2',
+        u'==={section-3} section 3',
+        u'==={section-4-0} section 4.0',
+        u'===={section-5} section 5',
+        u'==={section-4-1} section 4.1',
     ]
     for e in expected:
         assert e in re
@@ -36,7 +36,9 @@ def test_basic(app, status, warning):
         u'//raw[|html|<hr width=50 size=10>]',
         u'@<u>{下線}を引きます',
         u'索引@<hidx>{インデックス}インデックスを作ります',  # TODO: インデックス文字が入っている
+        u'numref:@<chap>{section-1},@<chap>{section-2},@<chap>{section-3}',
     ]
+    print(re)
     for e in expected:
         assert e in re
 
@@ -81,6 +83,10 @@ def test_code(app, status, warning):
     expected = (u'//cmd{\n$ cd /\n$ sudo rm -rf /\n//}')
     assert expected in re
 
+    # reference
+    expected = (u' * numref:@<list>{なにもなしname}\n')
+    assert expected in re
+
 
 @pytest.mark.sphinx('review')
 def test_admonition(app, status, warning):
@@ -89,12 +95,12 @@ def test_admonition(app, status, warning):
     re = (app.outdir / 'admonition.re').text()
 
     expected = [
-        u'//tip[tipキャプション]{',
-        u'//note[noteキャプション]{',
-        u'//caution[dangerキャプション]{',
-        u'//info[hintキャプション]{',
-        u'//warning[warningキャプション]{',
-        u'//warning{',
+        u'//tip{\ntipキャプション\n\nTipsです\n//}\n',
+        u'//note{\nnoteキャプション\n\nノートです\n//}\n',
+        u'//caution{\ndangerキャプション\n\ndangerはcautionになります。\n//}\n',
+        u'//info{\nhintキャプション\n\nhintはinfoになります\n//}\n',
+        u'//warning{\nwarningキャプション\n\nwarningです。\n//}\n',
+        u'//warning{\nwarningです。キャプションなしです。\n//}\n',
         u'//quote{\n百聞は一見にしかず\n//}',
     ]
 
@@ -114,7 +120,9 @@ def test_list(app, status, warning):
         u' : 第1の項目\n   第1の項目の説明\n\n',
         u' : 第2の項目\n   第2の項目の説明@<br>{}\n   第2の項目のさらなる説明\n\n',
         u' : 第3の項目\n   第3の項目の説明@<br>{}\n   第3の項目のさらなる説明\n\n//cmd',
-        u'//}\n\n : 第4の項目\n'
+        u'//}\n\n : 第4の項目\n',
+        u' : 第5の項目\n   @<icon>{picture}\n\n',
+        u' : 第6の項目\n   第6の項目の説明@<br>{}\n   @<icon>{picture}\n\n',
     ]
 
     for e in expected:
@@ -137,6 +145,10 @@ def test_table(app, status, warning):
     for e in expected:
         assert e in re
 
+    # reference
+    expected = (u' * numref:@<table>{compact-label}\n')
+    assert expected in re
+
 
 @pytest.mark.sphinx('review')
 def test_figure(app, status, warning):
@@ -147,6 +159,28 @@ def test_figure(app, status, warning):
     expected = [
         u'//image[picture][ここはfigureのキャプションです。]{',
         u'//image[picture][]{',
+    ]
+
+    for e in expected:
+        assert e in re
+
+    # reference
+    expected = (u' * numref:@<img>{picture}\n')
+    assert expected in re
+
+
+@pytest.mark.sphinx('review')
+def test_reference(app, status, warning):
+    app.builder.build_all()
+
+    re = (app.outdir / 'ref.re').text()
+
+    expected = [
+        u'numfig@<img>{figure|picture}です',
+        u'numfig@<table>{table|compact-label}です',
+        u'numfig@<list>{code|なにもなしname}です',
+        u'numfig@<chap>{basic|section-1}です',
+        u'numfig@<chap>{basic|section-2}です',
     ]
 
     for e in expected:
