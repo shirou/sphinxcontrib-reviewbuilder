@@ -97,42 +97,13 @@ class ReVIEWTranslator(TextTranslator):
         self.add_lines([text])
         self.new_state(indent)
 
-    def end_review_block(self, end=[], wrap=True):
-        self.end_state(end=end, wrap=wrap)
+    def end_review_block(self, end=[]):
+        self.end_state(end=end)
         self.add_lines(['//}', ''])
 
     def end_state(self, wrap=True, end=[''], first=None):
-        content = self.states.pop()
-        indent = self.stateindent.pop()
-        result = []
-        toformat = []
-
-        def do_format():
-            if not toformat:
-                return
-            res = ''.join(toformat).splitlines()
-            if end:
-                res += end
-            result.append((indent, res))
-        for itemindent, item in content:
-            if itemindent == -1:
-                toformat.append(item)
-            else:
-                do_format()
-                result.append((indent + itemindent, item))
-                toformat = []
-        do_format()
-        if first is not None and result:
-            itemindent, item = result[0]
-            result_rest, result = result[1:], []
-            if item:
-                toformat = [first + ' '.join(item)]
-                do_format()  # re-create `result` from `toformat`
-                _dummy, new_item = result[0]
-                result.insert(0, (itemindent - indent, [new_item[0]]))
-                result[1] = (itemindent, new_item[1:])
-                result.extend(result_rest)
-        self.states[-1].extend(result)
+        # force disable text wrapping
+        TextTranslator.end_state(self, wrap=False, end=end, first=first)
 
     def visit_section(self, node):
         self._title_char = self.sectionchar * self.sectionlevel
@@ -291,7 +262,7 @@ class ReVIEWTranslator(TextTranslator):
             self.new_review_block('//%s[%s][%s]{' % (t, caption, lang))
 
     def depart_literal_block(self, node):
-        self.end_review_block(wrap=False)
+        self.end_review_block()
 
     def visit_caption(self, node):
         raise nodes.SkipNode
@@ -364,7 +335,7 @@ class ReVIEWTranslator(TextTranslator):
 
     def depart_footnote(self, node):
         # convert all text inside footnote to single line
-        self.end_state(wrap=False, end=None)
+        self.end_state(end=None)
         footnote_text = self.states[-1].pop()[1]
         for line in footnote_text:
             self.add_text(line)
