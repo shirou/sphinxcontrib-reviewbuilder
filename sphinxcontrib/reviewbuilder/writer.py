@@ -194,14 +194,14 @@ class ReVIEWTranslator(TextTranslator):
 
         # insert a blank line after the list
         if len(self.list_counter) == 0:
-            self.add_text('')
+            self.add_lines([''])
 
     def depart_enumerated_list(self, node):
         TextTranslator.depart_enumerated_list(self, node)
 
         # insert a blank line after the list
         if len(self.list_counter) == 0:
-            self.add_text('')
+            self.add_lines([''])
 
     def depart_list_item(self, node):
         # remove trailing space
