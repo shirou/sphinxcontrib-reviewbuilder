@@ -328,6 +328,7 @@ class ReVIEWTranslator(TextTranslator):
 
     def visit_footnote(self, node):
         label = node['ids'][0]
+        self.new_state(0)
         self.add_text('//footnote[%s][' % label)
         self.new_state(0)
 
@@ -338,7 +339,15 @@ class ReVIEWTranslator(TextTranslator):
         for line in footnote_text:
             self.add_text(line)
 
-        self.add_text(']%s' % self.nl)
+        self.add_text(']')
+
+        index = node.parent.index(node)
+        if len(node.parent) > index + 1 and isinstance(node.parent[index + 1], nodes.footnote):
+            # inside consecutive footnotes (footnote group)
+            self.end_state(end=[])
+        else:
+            # insert a blank line after the footnote group
+            self.end_state(end=[''])
 
     def visit_table(self, node):
         if self.table:
