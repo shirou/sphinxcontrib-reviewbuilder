@@ -37,7 +37,7 @@ def test_basic(app, status, warning):
         u'//raw[|html|<hr width=50 size=10>]',
         u'@<u>{下線}を引きます',
         u'索引@<hidx>{インデックス}インデックスを作ります',  # TODO: インデックス文字が入っている
-        u'numref:@<chap>{section-1},@<chap>{section-2},@<chap>{section-3}',
+        u'numref:@<chap>{basic},@<hd>{section-2},@<hd>{section-3}',
     ]
     print(re)
     for e in expected:
@@ -170,6 +170,17 @@ def test_figure(app, status, warning):
     assert expected in re
 
 
+@pytest.mark.sphinx('review', testroot='deep-dirs')
+def test_deep_dirs(app, status, warning):
+    app.builder.build_all()
+    assert (app.outdir / 'appendix.re').exists()
+    assert (app.outdir / 'index.re').exists()
+    assert (app.outdir / 'chap1.re').exists()
+    assert (app.outdir / 'chap2.re').exists()
+    assert (app.outdir / 'images/chap1/picture.png').exists()
+    assert (app.outdir / 'images/chap2/picture.png').exists()
+
+
 @pytest.mark.sphinx('review')
 def test_reference(app, status, warning):
     app.builder.build_all()
@@ -180,8 +191,8 @@ def test_reference(app, status, warning):
         u'numfig@<img>{figure|picture}です',
         u'numfig@<table>{table|compact-label}です',
         u'numfig@<list>{code|なにもなしname}です',
-        u'numfig@<chap>{basic|section-1}です',
-        u'numfig@<chap>{basic|section-2}です',
+        u'numfig@<chap>{basic}です',
+        u'numfig@<hd>{basic|section-2}です',
     ]
 
     for e in expected:

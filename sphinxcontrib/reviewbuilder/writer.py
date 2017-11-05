@@ -118,7 +118,7 @@ class ReVIEWTranslator(TextTranslator):
 
     def visit_title_reference(self, node):
         """inline citation reference"""
-        self.add_text('@<code>{')
+        self.visit_literal(node)
 
     def depart_title_reference(self, node):
         self.add_text('}')
@@ -254,9 +254,9 @@ class ReVIEWTranslator(TextTranslator):
 
     def visit_literal(self, node):
         self.add_text('@<code>{')
-
-    def depart_literal(self, node):
+        self.add_text(node.astext().replace('\\', '\\\\'))
         self.add_text('}')
+        raise nodes.SkipNode
 
     def _make_visit_admonition(name):
         def visit_admonition(self, node):
@@ -383,8 +383,6 @@ class ReVIEWTranslator(TextTranslator):
         self.new_state(0)
 
     def visit_image(self, node):
-        filename = os.path.splitext(node['uri'])[0]
-
         caption = None
         for c in node.parent.children:
             if isinstance(c, nodes.caption):
@@ -394,6 +392,7 @@ class ReVIEWTranslator(TextTranslator):
             if isinstance(c, nodes.legend):
                 legend = c.astext()
 
+        filename = os.path.basename(os.path.splitext(node['uri'])[0])
         if node.get('inline'):
             self.add_text('@<icon>{%s}' % filename)
         else:
