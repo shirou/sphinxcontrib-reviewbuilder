@@ -220,7 +220,7 @@ class ReVIEWTranslator(TextTranslator):
         # TODO: remove highlight args
         lang = node.get('language', 'guess')
 
-        if lang == "bash":  # use cmd
+        if lang == "bash" and self.builder.config.review_use_cmd_block:
             self.new_review_block('//cmd{')
             return
 
