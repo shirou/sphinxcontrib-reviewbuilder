@@ -81,36 +81,39 @@ class NumberReferenceConverter(SphinxTransform):
 
         for node in self.document.traverse(addnodes.pending_xref):
             if node['refdomain'] == 'std' and node['reftype'] == 'numref':
-                docname, target_node = self.lookup(node)
-                if target_node is None:
-                    logger.warning('Invalid number_reference: %s', node, location=node)
-                    node.replace_self(node[0])
-                    continue
+                self.resolve_numref(node)
 
-                if docname == self.env.docname:
-                    prefix = ''
-                else:
-                    prefix = os.path.basename(docname) + '|'
+    def resolve_numref(self, node):
+        docname, target_node = self.lookup(node)
+        if target_node is None:
+            logger.warning('Invalid number_reference: %s', node, location=node)
+            node.replace_self(node[0])
+            return
 
-                if isinstance(target_node, nodes.table):
-                    text = '@<table>{%s%s}' % (prefix, target_node['ids'][0])
-                elif isinstance(target_node, nodes.figure):
-                    filename = os.path.basename(os.path.splitext(target_node[0]['uri'])[0])
-                    text = '@<img>{%s%s}' % (prefix, filename)
-                elif isinstance(target_node, nodes.literal_block):
-                    text = '@<list>{%s%s}' % (prefix, ''.join(target_node['names']))
-                elif isinstance(target_node, nodes.section):
-                    if isinstance(target_node.parent, nodes.document):
-                        text = '@<chap>{%s}' % (docname)
-                    else:
-                        text = '@<hd>{%s%s}' % (prefix, target_node['ids'][0])
-                else:
-                    logger.warning('Unsupported number_reference: %s', node,
-                                   location=node)
-                    continue
+        if docname == self.env.docname:
+            prefix = ''
+        else:
+            prefix = os.path.basename(docname) + '|'
 
-                ref = nodes.Text(text, text)
-                node.replace_self(ref)
+        if isinstance(target_node, nodes.table):
+            text = '@<table>{%s%s}' % (prefix, target_node['ids'][0])
+        elif isinstance(target_node, nodes.figure):
+            filename = os.path.basename(os.path.splitext(target_node[0]['uri'])[0])
+            text = '@<img>{%s%s}' % (prefix, filename)
+        elif isinstance(target_node, nodes.literal_block):
+            text = '@<list>{%s%s}' % (prefix, ''.join(target_node['names']))
+        elif isinstance(target_node, nodes.section):
+            if isinstance(target_node.parent, nodes.document):
+                text = '@<chap>{%s}' % (docname)
+            else:
+                text = '@<hd>{%s%s}' % (prefix, target_node['ids'][0])
+        else:
+            logger.warning('Unsupported number_reference: %s', node,
+                           location=node)
+            return
+
+        ref = nodes.Text(text, text)
+        node.replace_self(ref)
 
     def lookup(self, node):
         std = self.env.get_domain('std')
