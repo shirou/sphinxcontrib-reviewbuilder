@@ -82,6 +82,8 @@ class NumberReferenceConverter(SphinxTransform):
         for node in self.document.traverse(addnodes.pending_xref):
             if node['refdomain'] == 'std' and node['reftype'] == 'numref':
                 self.resolve_numref(node)
+            elif node['refdomain'] == 'std' and node['reftype'] == 'doc':
+                self.resolve_doc(node)
 
     def resolve_numref(self, node):
         docname, target_node = self.lookup(node)
@@ -112,6 +114,11 @@ class NumberReferenceConverter(SphinxTransform):
                            location=node)
             return
 
+        ref = nodes.Text(text, text)
+        node.replace_self(ref)
+
+    def resolve_doc(self, node):
+        text = '@<chap>{%s}' % node['reftarget']
         ref = nodes.Text(text, text)
         node.replace_self(ref)
 

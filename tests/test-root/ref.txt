@@ -16,3 +16,5 @@ numfig :numref:`なにもなしname` です
 numfig :numref:`section1` です
 
 numfig :numref:`section2` です
+
+doc :doc:`basic` です
