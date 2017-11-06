@@ -3,10 +3,10 @@
 
 import os
 
-from six import text_type
 from docutils import nodes, writers
 
 from sphinx import version_info as SPHINX_VERSION
+from sphinx.util import logging
 from sphinx.writers.text import TextTranslator
 
 
@@ -16,17 +16,7 @@ if False:
     from sphinx.builders.text import TextBuilder  # NOQA
 
 
-class Table(object):
-    def __init__(self):
-        self.col = 0
-        self.colcount = 0
-        self.colspec = None
-        self.rowcount = 0
-        self.had_head = False
-        self.has_problematic = False
-        self.has_verbatim = False
-        self.caption = None
-        self.longtable = False
+logger = logging.getLogger(__name__)
 
 
 class ReVIEWWriter(writers.Writer):
@@ -72,86 +62,59 @@ class ReVIEWTranslator(TextTranslator):
         "hint": "info",
     }
 
-    def __init__(self, document, builder):
-        nodes.NodeVisitor.__init__(self, document)
-        self.builder = builder
+    def add_lines(self, lines):
+        self.states[-1].append((0, lines))
 
-        newlines = builder.config.text_newlines
-        if newlines == 'windows':
-            self.nl = '\r\n'
-        elif newlines == 'native':
-            self.nl = os.linesep
-        else:
-            self.nl = '\n'
-        self.end = "%s//}%s" % (self.nl, self.nl)
-        self.states = [[]]
-        self.stateindent = [0]
-        self.list_counter = []
-        self.sectionlevel = 0
-        self.lineblocklevel = 0
-        self.table = None
+    def new_review_block(self, text, indent=0):
+        self.add_lines([text])
+        self.new_state(indent)
+
+    def end_review_block(self, end=[]):
+        self.end_state(end=end)
+        self.add_lines(['//}', ''])
 
     def end_state(self, wrap=True, end=[''], first=None):
-        content = self.states.pop()
-        indent = self.stateindent.pop()
-        result = []
-        toformat = []
-
-        def do_format():
-            if not toformat:
-                return
-            res = ''.join(toformat).splitlines()
-            if end:
-                res += end
-            result.append((indent, res))
-        for itemindent, item in content:
-            if itemindent == -1:
-                toformat.append(item)
-            else:
-                do_format()
-                result.append((indent + itemindent, item))
-                toformat = []
-        do_format()
-        if first is not None and result:
-            itemindent, item = result[0]
-            result_rest, result = result[1:], []
-            if item:
-                toformat = [first + ' '.join(item)]
-                do_format()  # re-create `result` from `toformat`
-                _dummy, new_item = result[0]
-                result.insert(0, (itemindent - indent, [new_item[0]]))
-                result[1] = (itemindent, new_item[1:])
-                result.extend(result_rest)
-        self.states[-1].extend(result)
+        # force disable text wrapping
+        TextTranslator.end_state(self, wrap=False, end=end, first=first)
 
     def visit_section(self, node):
         self._title_char = self.sectionchar * self.sectionlevel
         self.sectionlevel += 1
 
     def visit_paragraph(self, node):
+        # overrided: allowed for admonitions
         self.new_state(0)
 
     def depart_paragraph(self, node):
         self.end_state()
 
-    def depart_title(self, node):
-        if self.table:
-            return
-
-        text = text_type(''.join(x[1] for x in self.states.pop() if x[0] == -1))
-        self.stateindent.pop()
-        text = text_type(text)
-
-        marker = self.sectionchar * self.sectionlevel
-        if node.parent['ids']:
-            title = ['', u'%s{%s} %s' % (marker, node.parent['ids'][0], text)]
+    def visit_title(self, node):
+        if isinstance(node.parent, nodes.Admonition):
+            self.add_text(node.astext() + ': ')
+            raise nodes.SkipNode
+        elif isinstance(node.parent, nodes.table):
+            raise nodes.SkipNode
         else:
-            title = ['', u'%s %s' % (marker, text)]
-        if len(self.states) == 2 and len(self.states[-1]) == 0:
-            # remove an empty line before title if it is first section title in the document
-            title.pop(0)
-        self.states[-1].append((0, title))
-        self.add_text(self.nl)
+            self.new_state(0)
+
+    def depart_title(self, node):
+        if isinstance(node.parent, nodes.section):
+            self.end_state()
+
+            marker = self.sectionchar * self.sectionlevel
+            text = ''.join(self.states[-1].pop()[1])
+            if node.parent['ids']:
+                title = u'%s{%s} %s' % (marker, node.parent['ids'][0], text)
+            else:
+                title = u'%s %s' % (marker, text)
+            if len(self.states) == 2 and len(self.states[-1]) == 0:
+                # at the top of the document; no blank lines are needed here.
+                self.add_lines([title, ''])
+            else:
+                # insert a blank line before title
+                self.add_lines(['', title, ''])
+        else:
+            logger.warning('unsupperted title type: %s', node.parent)
 
     def visit_title_reference(self, node):
         """inline citation reference"""
@@ -228,13 +191,17 @@ class ReVIEWTranslator(TextTranslator):
 
     def depart_bullet_list(self, node):
         TextTranslator.depart_bullet_list(self, node)
+
+        # insert a blank line after the list
         if len(self.list_counter) == 0:
-            self.add_text('')
+            self.add_lines([''])
 
     def depart_enumerated_list(self, node):
         TextTranslator.depart_enumerated_list(self, node)
+
+        # insert a blank line after the list
         if len(self.list_counter) == 0:
-            self.add_text('')
+            self.add_lines([''])
 
     def depart_list_item(self, node):
         # remove trailing space
@@ -251,12 +218,10 @@ class ReVIEWTranslator(TextTranslator):
 
     def visit_literal_block(self, node):
         # TODO: remove highlight args
-        self.new_state(0)
-
         lang = node.get('language', 'guess')
 
         if lang == "bash":  # use cmd
-            self.add_text('//cmd{' + self.nl)
+            self.new_review_block('//cmd{')
             return
 
         names = False  # get reference if exists
@@ -272,17 +237,17 @@ class ReVIEWTranslator(TextTranslator):
         if 'linenos' in node and node['linenos']:
             if 'highlight_args' in node and 'linenostart' in node['highlight_args']:
                 n = node['highlight_args']['linenostart']
-                self.add_text('//firstlinenum[%s]%s' % (n, self.nl))
+                self.add_lines(['//firstlinenum[%s]' % n])
                 # TODO: remove highlight args line
             t += "num"
 
         if names:
-            self.add_text('//%s[%s][%s][%s]{%s' % (t, names, caption, lang, self.nl))
+            self.new_review_block('//%s[%s][%s][%s]{' % (t, names, caption, lang))
         else:
-            self.add_text('//%s[%s][%s]{%s' % (t, caption, lang, self.nl))
+            self.new_review_block('//%s[%s][%s]{' % (t, caption, lang))
 
     def depart_literal_block(self, node):
-        self.end_state(end=['//}' + self.nl], wrap=False)
+        self.end_review_block()
 
     def visit_caption(self, node):
         raise nodes.SkipNode
@@ -295,7 +260,7 @@ class ReVIEWTranslator(TextTranslator):
 
     def _make_visit_admonition(name):
         def visit_admonition(self, node):
-            self.states[-1].append((0, [u'//%s{' % self.admonitionlabels[name]]))
+            self.new_review_block('//%s{' % self.admonitionlabels[name])
 
         return visit_admonition
 
@@ -304,7 +269,8 @@ class ReVIEWTranslator(TextTranslator):
         content = self.states[-1][-1][1]
         while content and content[-1] == '':
             content.pop()
-        self.states[-1].append((0, [u'//}']))
+
+        self.end_review_block()
 
     visit_attention = _make_visit_admonition('attention')
     depart_attention = _depart_named_admonition
@@ -326,7 +292,9 @@ class ReVIEWTranslator(TextTranslator):
     depart_warning = _depart_named_admonition
 
     def visit_block_quote(self, node):
-        self.add_text('//quote{\n%s%s' % (node.astext(), self.end))
+        self.new_review_block('//quote{')
+        self.add_text(node.astext())
+        self.end_review_block()
         raise nodes.SkipNode
 
     def visit_math(self, node):
@@ -336,10 +304,10 @@ class ReVIEWTranslator(TextTranslator):
         self.add_text("}")
 
     def visit_math_block(self, node):
-        self.add_text('//texequation{' + self.nl)
+        self.new_review_block('//texequation')
 
     def depart_math_block(self, node):
-        self.add_text(self.end)
+        self.end_review_block()
 
     def visit_footnote_reference(self, node):
         self.add_text('@<fn>{%s}' % node['refid'])
@@ -347,17 +315,26 @@ class ReVIEWTranslator(TextTranslator):
 
     def visit_footnote(self, node):
         label = node['ids'][0]
+        self.new_state(0)
         self.add_text('//footnote[%s][' % label)
         self.new_state(0)
 
     def depart_footnote(self, node):
         # convert all text inside footnote to single line
-        self.end_state(wrap=False, end=None)
+        self.end_state(end=None)
         footnote_text = self.states[-1].pop()[1]
         for line in footnote_text:
             self.add_text(line)
 
-        self.add_text(']%s' % self.nl)
+        self.add_text(']')
+
+        index = node.parent.index(node)
+        if len(node.parent) > index + 1 and isinstance(node.parent[index + 1], nodes.footnote):
+            # inside consecutive footnotes (footnote group)
+            self.end_state(end=[])
+        else:
+            # insert a blank line after the footnote group
+            self.end_state(end=[''])
 
     def visit_table(self, node):
         if self.table:
@@ -370,9 +347,8 @@ class ReVIEWTranslator(TextTranslator):
         title = ""
         if isinstance(node.children[0], nodes.title):
             title = node.children[0].astext()
-            node.children.pop(0)
 
-        self.add_text(u'//table[%s][%s]{%s' % (label, title, self.nl))
+        self.new_review_block(u'//table[%s][%s]{' % (label, title))
 
     def visit_entry(self, node):
         if len(node) == 0:
@@ -390,16 +366,18 @@ class ReVIEWTranslator(TextTranslator):
         text = text.replace('\n', '@<br>{}')
         self.table[-1].append(text)
 
+    def visit_row(self, node):
+        self.table.append([])
+
     def depart_row(self, node):
-        self.add_text(u'\t'.join(self.table.pop()))
-        self.add_text(self.nl)
+        self.add_lines([u'\t'.join(self.table.pop())])
 
     def depart_thead(self, node):
-        self.add_text('------------' + self.nl)
+        self.add_lines(['------------'])
 
     def depart_table(self, node):
         self.table = None
-        self.add_text("//}" + self.nl)
+        self.end_review_block()
 
     def visit_figure(self, node):
         self.new_state(0)
@@ -417,15 +395,17 @@ class ReVIEWTranslator(TextTranslator):
         filename = os.path.basename(os.path.splitext(node['uri'])[0])
         if node.get('inline'):
             self.add_text('@<icon>{%s}' % filename)
-            raise nodes.SkipNode
-        elif caption:
-            self.add_text('//image[%s][%s]{%s' % (filename, caption, self.nl))
         else:
-            self.add_text('//image[%s][]{%s' % (filename, self.nl))
-        if legend:
-            self.add_text(legend)
+            if caption:
+                self.new_review_block('//image[%s][%s]{' % (filename, caption))
+            else:
+                self.new_review_block('//image[%s][]{' % filename)
 
-        self.add_text(self.nl + "//}" + self.nl)
+            if legend:
+                self.add_lines([legend])
+
+            self.end_review_block("//}")
+
         raise nodes.SkipNode
 
     def visit_legend(self, node):
@@ -435,16 +415,21 @@ class ReVIEWTranslator(TextTranslator):
         self.end_state()
 
     def visit_comment(self, node):
-        for c in node.astext().splitlines():
-            self.add_text('#@# %s%s' % (c, self.nl))
+        comments = ["#@# %s" % line.strip() for line in node.astext().splitlines()]
+
+        index = node.parent.index(node)
+        if len(node.parent) > index + 1 and isinstance(node.parent[index + 1], nodes.comment):
+            # inside consecutive comments (comment group)
+            self.add_lines(comments)
+        else:
+            # insert a blank line after the comment group
+            self.add_lines(comments + [''])
 
         raise nodes.SkipNode
 
     def visit_raw(self, node):
-        form = node.get('format', '')
-        self.new_state(0)
-        self.add_text('//raw[|%s|%s]' % (form, node.astext()))
-        self.end_state(wrap=False)
+        content = node.astext().replace('\n', '\\n')
+        self.add_lines(['//raw[|%s|%s]' % (node.get('format'), content)])
         raise nodes.SkipNode
 
     def visit_subscript(self, node):
