@@ -76,6 +76,9 @@ class NumberReferenceConverter(SphinxTransform):
     default_priority = 5  # before ReferencesResolver
 
     def apply(self):
+        if self.app.builder.name != 'review':
+            return
+
         for node in self.document.traverse(addnodes.pending_xref):
             if node['refdomain'] == 'std' and node['reftype'] == 'numref':
                 docname, target_node = self.lookup(node)
