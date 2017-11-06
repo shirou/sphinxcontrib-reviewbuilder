@@ -32,8 +32,6 @@ def test_basic(app, status, warning):
         u'ここは@<fn>{f1}脚注@<fn>{f2}',
         (u'//footnote[f1][脚注1]\n'
          u'//footnote[f2][脚注2は@<i>{インライン}@<b>{要素}を@<href>{https://github.com/kmuto/review,含みます}]\n\n'),
-        u'#@# コメントです',
-        u'#@# コメントブロック1\n#@# コメントブロック2',
         u'//raw[|html|<hr width=50 size=10>]',
         u'@<u>{下線}を引きます',
         u'索引@<hidx>{インデックス}インデックスを作ります',  # TODO: インデックス文字が入っている
@@ -42,6 +40,13 @@ def test_basic(app, status, warning):
     print(re)
     for e in expected:
         assert e in re
+
+    unexpected = [
+        u'#@# コメントです',
+        u'#@# コメントブロック1\n#@# コメントブロック2',
+    ]
+    for e in unexpected:
+        assert e not in re
 
 
 @pytest.mark.sphinx('review')
@@ -193,6 +198,21 @@ def test_reference(app, status, warning):
         u'numfig@<list>{code|なにもなしname}です',
         u'numfig@<chap>{basic}です',
         u'numfig@<hd>{basic|section-2}です',
+    ]
+
+    for e in expected:
+        assert e in re
+
+
+@pytest.mark.sphinx('review', confoverrides={'review_keep_comments': True})
+def test_keep_comments(app, status, warning):
+    app.builder.build_all()
+
+    re = (app.outdir / 'basic.re').text()
+
+    expected = [
+        u'#@# コメントです',
+        u'#@# コメントブロック1\n#@# コメントブロック2',
     ]
 
     for e in expected:
