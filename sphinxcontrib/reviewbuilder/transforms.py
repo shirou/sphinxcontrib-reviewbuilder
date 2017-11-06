@@ -106,7 +106,7 @@ class NumberReferenceConverter(SphinxTransform):
             text = '@<list>{%s%s}' % (prefix, ''.join(target_node['names']))
         elif isinstance(target_node, nodes.section):
             if isinstance(target_node.parent, nodes.document):
-                text = '@<chap>{%s}' % (docname)
+                text = '@<chap>{%s}' % (os.path.basename(docname))
             else:
                 text = '@<hd>{%s%s}' % (prefix, target_node['ids'][0])
         else:
@@ -118,7 +118,7 @@ class NumberReferenceConverter(SphinxTransform):
         node.replace_self(ref)
 
     def resolve_doc(self, node):
-        text = '@<chap>{%s}' % node['reftarget']
+        text = '@<chap>{%s}' % os.path.basename(node['reftarget'])
         ref = nodes.Text(text, text)
         node.replace_self(ref)
 
