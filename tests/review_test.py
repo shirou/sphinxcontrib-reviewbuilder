@@ -30,7 +30,8 @@ def test_basic(app, status, warning):
         u'@<href>{https://github.com/kmuto/review/blob/master/doc/format.rdoc,フォーマット}',
         u'@<href>{https://github.com/kmuto/review/blob/master/doc/format.rdoc}',
         u'ここは@<fn>{f1}脚注@<fn>{f2}',
-        u'//footnote[f2][脚注2は@<i>{インライン}@<b>{要素}を@<href>{https://github.com/kmuto/review,含みます}]',
+        (u'//footnote[f1][脚注1]\n'
+         u'//footnote[f2][脚注2は@<i>{インライン}@<b>{要素}を@<href>{https://github.com/kmuto/review,含みます}]\n\n'),
         u'//raw[|html|<hr width=50 size=10>]',
         u'@<u>{下線}を引きます',
         u'索引@<hidx>{インデックス}インデックスを作ります',  # TODO: インデックス文字が入っている
