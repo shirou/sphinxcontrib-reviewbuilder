@@ -218,3 +218,13 @@ def test_keep_comments(app, status, warning):
 
     for e in expected:
         assert e in re
+
+
+@pytest.mark.sphinx('review', confoverrides={'review_use_cmd_block': False})
+def test_review_use_cmd_block(app, status, warning):
+    app.builder.build_all()
+
+    re = (app.outdir / 'code.re').text()
+
+    expected = (u'//emlist[][bash]{\n$ cd /\n$ sudo rm -rf /\n//}')
+    assert expected in re
