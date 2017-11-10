@@ -192,6 +192,25 @@ class ReVIEWReferenceResolver(SphinxTransform):
         return docname, target_node
 
 
+class NestedEnumeratedListChecker(SphinxTransform):
+    """Check and warn if nested enumerated list exists."""
+    default_priority = 999
+
+    def apply(self):
+        if self.app.builder.name != 'review':
+            return
+
+        ALLOWED_NODES = (nodes.paragraph, nodes.image)
+        for node in self.document.traverse(nodes.enumerated_list):
+            for item in node:
+                for subnode in item:
+                    if not isinstance(subnode, ALLOWED_NODES):
+                        logger.warning('In Re:VIEW, enumerated list can\'t contain %s.',
+                                       subnode.tagname, location=subnode)
+                        break
+
+
 def setup(app):
     app.add_post_transform(DefinitionListTransform)
     app.add_post_transform(ReVIEWReferenceResolver)
+    app.add_post_transform(NestedEnumeratedListChecker)
