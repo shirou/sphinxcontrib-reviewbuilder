@@ -18,3 +18,9 @@ numfig :numref:`section1` です
 numfig :numref:`section2` です
 
 doc :doc:`basic` です
+
+ref :ref:`section1` です
+
+ref :ref:`section2` です
+
+ref :ref:`section3` です

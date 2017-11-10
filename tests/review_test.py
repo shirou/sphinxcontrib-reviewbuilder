@@ -36,8 +36,8 @@ def test_basic(app, status, warning):
         u'@<u>{下線}を引きます',
         u'索引@<hidx>{インデックス}インデックスを作ります',  # TODO: インデックス文字が入っている
         u'numref:@<chap>{basic},@<hd>{section-2},@<hd>{section-3}',
+        u'ref:@<hd>{section-2},@<hd>{section-2|section-3}',
     ]
-    print(re)
     for e in expected:
         assert e in re
 
@@ -199,6 +199,9 @@ def test_reference(app, status, warning):
         u'numfig@<chap>{basic}です',
         u'numfig@<hd>{basic|section-2}です',
         u'doc@<chap>{basic}です',
+        u'ref@<chap>{basic}です',
+        u'ref@<hd>{basic|section-2}です',
+        u'ref@<hd>{basic|section-2|section-3}です',
     ]
 
     for e in expected:

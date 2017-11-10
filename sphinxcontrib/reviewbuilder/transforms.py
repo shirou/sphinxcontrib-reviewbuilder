@@ -71,9 +71,9 @@ class DefinitionListTransform(SphinxTransform):
                     deflist.parent.insert(pos + 1, node)
 
 
-class NumberReferenceConverter(SphinxTransform):
-    """Convert number references to Re:VIEW's reference notations."""
-    default_priority = 5  # before ReferencesResolver
+class ReVIEWReferenceResolver(SphinxTransform):
+    """Convert Sphinx-references to Re:VIEW's reference notations."""
+    default_priority = 5  # before Sphinx's ReferencesResolver
 
     def apply(self):
         if self.app.builder.name != 'review':
@@ -84,6 +84,11 @@ class NumberReferenceConverter(SphinxTransform):
                 self.resolve_numref(node)
             elif node['refdomain'] == 'std' and node['reftype'] == 'doc':
                 self.resolve_doc(node)
+            elif node['refdomain'] == 'std' and node['reftype'] == 'ref':
+                self.resolve_section_ref(node)
+
+        for node in self.document.traverse(nodes.reference):
+            self.resolve_hyperref(node)
 
     def resolve_numref(self, node):
         docname, target_node = self.lookup(node)
@@ -117,10 +122,61 @@ class NumberReferenceConverter(SphinxTransform):
         ref = nodes.Text(text, text)
         node.replace_self(ref)
 
+    def resolve_section_ref(self, node):
+        docname, target_node = self.lookup(node)
+        if target_node is None:
+            logger.warning('Invalid reference: %s', node, location=node)
+            node.replace_self(node[0])
+            return
+
+        if isinstance(target_node, nodes.section):
+            if isinstance(target_node.parent, nodes.document):
+                text = '@<chap>{%s}' % (os.path.basename(docname))
+            else:
+                heading_id = self.get_heading_id(docname, target_node)
+                text = '@<hd>{%s}' % '|'.join(heading_id)
+        else:
+            return  # skip
+
+        ref = nodes.Text(text, text)
+        node.replace_self(ref)
+
+    def resolve_hyperref(self, node):
+        docname = self.env.docname
+        target_node = self.env.get_doctree(docname).ids.get(node.get('refid'))
+        if target_node is None:
+            return
+
+        if isinstance(target_node, nodes.section):
+            if isinstance(target_node.parent, nodes.document):
+                text = '@<chap>{%s}' % (os.path.basename(docname))
+            else:
+                heading_id = self.get_heading_id(docname, target_node)
+                text = '@<hd>{%s}' % '|'.join(heading_id)
+        else:
+            return  # skip
+
+        index = node.parent.index(node)
+        ref = nodes.Text(text, text)
+        node.parent.insert(index, ref)
+        node.parent.remove(node)
+
     def resolve_doc(self, node):
         text = '@<chap>{%s}' % os.path.basename(node['reftarget'])
         ref = nodes.Text(text, text)
         node.replace_self(ref)
+
+    def get_heading_id(self, docname, node):
+        headings = []
+        while not isinstance(node.parent, nodes.document):
+            if isinstance(node, nodes.section):
+                headings.append(node['ids'][0])
+            node = node.parent
+
+        if docname != self.env.docname:
+            headings.append(os.path.basename(docname))
+
+        return reversed(headings)
 
     def lookup(self, node):
         std = self.env.get_domain('std')
@@ -138,4 +194,4 @@ class NumberReferenceConverter(SphinxTransform):
 
 def setup(app):
     app.add_post_transform(DefinitionListTransform)
-    app.add_post_transform(NumberReferenceConverter)
+    app.add_post_transform(ReVIEWReferenceResolver)
