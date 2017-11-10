@@ -201,6 +201,7 @@ def test_reference(app, status, warning):
         u'doc@<chap>{basic}です',
         u'ref@<chap>{basic}です',
         u'ref@<hd>{basic|section-2}です',
+        u'ref@<hd>{basic|section-2|section-3}です',
     ]
 
     for e in expected:

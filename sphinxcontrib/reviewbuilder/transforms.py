@@ -126,16 +126,14 @@ class ReVIEWReferenceResolver(SphinxTransform):
             node.replace_self(node[0])
             return
 
-        if docname == self.env.docname:
-            prefix = ''
-        else:
-            prefix = os.path.basename(docname) + '|'
-
         if isinstance(target_node, nodes.section):
             if isinstance(target_node.parent, nodes.document):
                 text = '@<chap>{%s}' % (os.path.basename(docname))
+            elif docname == self.env.docname:
+                text = '@<hd>{%s}' % (target_node['ids'][0])
             else:
-                text = '@<hd>{%s%s}' % (prefix, target_node['ids'][0])
+                heading_id = self.get_heading_id(os.path.basename(docname), target_node)
+                text = '@<hd>{%s}' % '|'.join(heading_id)
         else:
             return  # skip
 
@@ -146,6 +144,15 @@ class ReVIEWReferenceResolver(SphinxTransform):
         text = '@<chap>{%s}' % os.path.basename(node['reftarget'])
         ref = nodes.Text(text, text)
         node.replace_self(ref)
+
+    def get_heading_id(self, docname, node):
+        headings = [docname]
+        while not isinstance(node.parent, nodes.document):
+            if isinstance(node, nodes.section):
+                headings.insert(1, node['ids'][0])
+            node = node.parent
+
+        return headings
 
     def lookup(self, node):
         std = self.env.get_domain('std')
