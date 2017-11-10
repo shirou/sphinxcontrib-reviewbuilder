@@ -87,6 +87,9 @@ class ReVIEWReferenceResolver(SphinxTransform):
             elif node['refdomain'] == 'std' and node['reftype'] == 'ref':
                 self.resolve_section_ref(node)
 
+        for node in self.document.traverse(nodes.reference):
+            self.resolve_hyperref(node)
+
     def resolve_numref(self, node):
         docname, target_node = self.lookup(node)
         if target_node is None:
@@ -129,10 +132,8 @@ class ReVIEWReferenceResolver(SphinxTransform):
         if isinstance(target_node, nodes.section):
             if isinstance(target_node.parent, nodes.document):
                 text = '@<chap>{%s}' % (os.path.basename(docname))
-            elif docname == self.env.docname:
-                text = '@<hd>{%s}' % (target_node['ids'][0])
             else:
-                heading_id = self.get_heading_id(os.path.basename(docname), target_node)
+                heading_id = self.get_heading_id(docname, target_node)
                 text = '@<hd>{%s}' % '|'.join(heading_id)
         else:
             return  # skip
@@ -140,19 +141,42 @@ class ReVIEWReferenceResolver(SphinxTransform):
         ref = nodes.Text(text, text)
         node.replace_self(ref)
 
+    def resolve_hyperref(self, node):
+        docname = self.env.docname
+        target_node = self.env.get_doctree(docname).ids.get(node.get('refid'))
+        if target_node is None:
+            return
+
+        if isinstance(target_node, nodes.section):
+            if isinstance(target_node.parent, nodes.document):
+                text = '@<chap>{%s}' % (os.path.basename(docname))
+            else:
+                heading_id = self.get_heading_id(docname, target_node)
+                text = '@<hd>{%s}' % '|'.join(heading_id)
+        else:
+            return  # skip
+
+        index = node.parent.index(node)
+        ref = nodes.Text(text, text)
+        node.parent.insert(index, ref)
+        node.parent.remove(node)
+
     def resolve_doc(self, node):
         text = '@<chap>{%s}' % os.path.basename(node['reftarget'])
         ref = nodes.Text(text, text)
         node.replace_self(ref)
 
     def get_heading_id(self, docname, node):
-        headings = [docname]
+        headings = []
         while not isinstance(node.parent, nodes.document):
             if isinstance(node, nodes.section):
-                headings.insert(1, node['ids'][0])
+                headings.append(node['ids'][0])
             node = node.parent
 
-        return headings
+        if docname != self.env.docname:
+            headings.append(os.path.basename(docname))
+
+        return reversed(headings)
 
     def lookup(self, node):
         std = self.env.get_domain('std')

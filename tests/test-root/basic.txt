@@ -130,3 +130,4 @@ section 6.2
 ++++++++++++++
 
 numref: :numref:`section1`, :numref:`section2`, :numref:`section3`
+ref: :ref:`section2`, `section3`_
