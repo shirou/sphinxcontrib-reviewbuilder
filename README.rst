@@ -41,8 +41,6 @@ How to use
 
   % make review
 
-or you can add this command line to your Makefile.
-
 Repository
 ==========
 

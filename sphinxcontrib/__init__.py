@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-    sphinxcontrib-rubytag
-    ~~~~~~~~~~~~~~~~~~~~~~~~~
+    sphinxcontrib-reviewbuilder
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    :copyright: Copyright 2013 by the WAKAYAMA Shirou
-    :license: BSD, see LICENSE for details.
+    :copyright: Copyright 2013 by the WAKAYAMA Shirou, Takeshi Komiya
+    :license: LGPLv2, see LICENSE for details.
 """
 
 __import__('pkg_resources').declare_namespace(__name__)

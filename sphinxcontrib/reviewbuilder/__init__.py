@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
     sphinxcontrib-reviewbuilder
-    ~~~~~~~~~~~~~~~~~~~~~~~~~
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    :copyright: Copyright 2013 by the WAKAYAMA Shirou
+    :copyright: Copyright 2013 by the WAKAYAMA Shirou, Takeshi Komiya
     :license: LGPLv2, see LICENSE for details.
 """
 
