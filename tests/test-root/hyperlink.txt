@@ -1,0 +1,6 @@
+https://www.oreilly.co.jp/books/9784873118192/
+`Getting Started with Sphinx (2nd Ed)`__
+`sphinx <https://sphinx-doc.org/>`_
+:pep:`287`
+
+__ https://www.oreilly.co.jp/books/9784873118192/

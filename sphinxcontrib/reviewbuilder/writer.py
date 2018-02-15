@@ -124,14 +124,15 @@ class ReVIEWTranslator(TextTranslator):
         self.add_text('}')
 
     def visit_reference(self, node):
-        if 'internal' in node and node['internal']:
-            # TODO: ターゲットごとに変える
-            self.add_text('@<chap>{%s}' % (node.get('refuri', '').replace('#', '')))
-        else:  # URL
-            if 'name' in node:
-                self.add_text('@<href>{%s,%s}' % (node.get('refuri', ''), node['name']))
+        refuri = node.get('refuri', '')
+        if 'name' in node:
+            self.add_text('@<href>{%s,%s}' % (refuri, node['name']))
+        else:
+            text = node.astext()
+            if refuri == text:
+                self.add_text('@<href>{%s}' % refuri)
             else:
-                self.add_text('@<href>{%s}' % (node.get('refuri', '')))
+                self.add_text('@<href>{%s,%s}' % (refuri, text))
         raise nodes.SkipNode
 
     def visit_emphasis(self, node):
