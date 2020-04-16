@@ -7,7 +7,7 @@ from docutils import nodes, writers
 
 from sphinx import version_info as SPHINX_VERSION
 from sphinx.util import logging
-from sphinx.writers.text import TextTranslator
+from sphinx.writers.text import TextTranslator, Table, Cell
 
 
 if False:
@@ -124,15 +124,14 @@ class ReVIEWTranslator(TextTranslator):
         self.add_text('}')
 
     def visit_reference(self, node):
-        refuri = node.get('refuri', '')
-        if 'name' in node:
-            self.add_text('@<href>{%s,%s}' % (refuri, node['name']))
-        else:
-            text = node.astext()
-            if refuri == text:
-                self.add_text('@<href>{%s}' % refuri)
+        if 'internal' in node and node['internal']:
+            # TODO: ターゲットごとに変える
+            self.add_text('@<chap>{%s}' % (node.get('refuri', '').replace('#', '')))
+        else:  # URL
+            if 'name' in node:
+                self.add_text('@<href>{%s,%s}' % (node.get('refuri', ''), node['name']))
             else:
-                self.add_text('@<href>{%s,%s}' % (refuri, text))
+                self.add_text('@<href>{%s}' % (node.get('refuri', '')))
         raise nodes.SkipNode
 
     def visit_emphasis(self, node):
@@ -340,7 +339,7 @@ class ReVIEWTranslator(TextTranslator):
     def visit_table(self, node):
         if self.table:
             raise NotImplementedError('Nested tables are not supported.')
-        self.table = [[]]
+        self.table = Table()
         label = ""
         if len(node['ids']) > 0:
             label = node['ids'][0]
@@ -354,7 +353,7 @@ class ReVIEWTranslator(TextTranslator):
     def visit_entry(self, node):
         if len(node) == 0:
             # Fill single-dot ``.`` for empty table cells
-            self.table[-1].append('.')
+            self.table.add_cell(Cell('.'))
             raise nodes.SkipNode
         else:
             TextTranslator.visit_entry(self, node)
@@ -363,18 +362,18 @@ class ReVIEWTranslator(TextTranslator):
         TextTranslator.depart_entry(self, node)
 
         # replace return codes by @<br>{}
-        text = self.table[-1].pop().strip()
-        text = text.replace('\n', '@<br>{}')
-        self.table[-1].append(text)
+        text = self.table.lines[-1][-1].text.strip()
+        self.table.lines[-1][-1].text = text.replace('\n', '@<br>{}')
+        #self.table.add_cell(Cell(text))
 
     def visit_row(self, node):
-        self.table.append([])
+        self.table.add_row()
 
     def depart_row(self, node):
-        self.add_lines([u'\t'.join(self.table.pop())])
-
+        self.add_lines([u'\t'.join([item.text.strip() for item in self.table.lines[-1]])])
+        
     def depart_thead(self, node):
-        self.add_lines(['------------'])
+        self.add_lines(['------------------------'])
 
     def depart_table(self, node):
         self.table = None

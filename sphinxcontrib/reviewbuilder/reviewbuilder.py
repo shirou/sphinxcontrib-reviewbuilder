@@ -12,11 +12,14 @@ from docutils import nodes
 from docutils.io import StringOutput
 from sphinx.builders.text import TextBuilder
 from sphinx.util.fileutil import copy_asset_file
+from sphinx.util import logging
 from sphinx.util.osutil import ensuredir
 from sphinx.util.console import bold
 from sphinx.util.template import SphinxRenderer
 
 from sphinxcontrib.reviewbuilder.writer import ReVIEWWriter, ReVIEWTranslator
+
+logger = logging.getLogger(__name__)
 
 TEMPLATE = """
 PREDEF:
@@ -64,7 +67,7 @@ class ReVIEWBuilder(TextBuilder):
                 f.write(self.writer.output)
             self.out_files.append(filename)
         except (IOError, OSError) as err:
-            self.warn("error writing file %s: %s" % (filename, err))
+            logger.warn("error writing file %s: %s" % (filename, err))
 
         self.post_process_images(docname, doctree)
 
@@ -84,7 +87,7 @@ class ReVIEWBuilder(TextBuilder):
                     if candidate:
                         break
                 else:
-                    self.warn(
+                    logger.warn(
                         'no matching candidate for image URI %r' % node['uri'],
                         '%s:%s' % (node.source, getattr(node, 'line', '')))
                     continue
@@ -108,15 +111,15 @@ class ReVIEWBuilder(TextBuilder):
 
         # copy image files
         if self.images:
-            self.info(bold('copying images...'), nonl=1)
+            logger.info(bold('copying images...'), nonl=True)
             for dest, src in iteritems(self.images):
-                self.info(' ' + src, nonl=1)
+                logger.info(' ' + src, nonl=True)
                 outdir = path.join(self.outdir, "images")
                 outfile = path.join(outdir, dest)
                 ensuredir(path.dirname(outfile))
                 copy_asset_file(path.join(self.srcdir, src),
                                 outfile)
-            self.info()
+
 
 
 def setup(app):
