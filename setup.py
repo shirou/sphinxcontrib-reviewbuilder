@@ -9,7 +9,7 @@ system for books and ebooks.
 ReVIEW: https://github.com/kmuto/review
 '''
 
-requires = ['Sphinx>=1.2', 'setuptools']
+requires = ['Sphinx>=2.4', 'setuptools']
 
 setup(
     name='sphinxcontrib-reviewbuilder',
