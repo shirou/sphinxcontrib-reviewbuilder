@@ -8,3 +8,4 @@ sphinxcontrib_reviewbuilder.egg-info/
 build
 dist
 sphinx3
+.idea
